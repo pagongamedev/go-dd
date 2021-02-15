@@ -177,7 +177,7 @@ func (api *APIHTTP) SetHandlerByPassLifeCycle(handler HandlerByPass) {
 // SetupHandlerHTTP API
 func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}) Handler {
 	api.service = service
-	api.service = serviceOptionList
+	api.serviceOptionList = serviceOptionList
 	return api.handlerLifeCycle()
 }
 
