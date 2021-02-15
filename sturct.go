@@ -1,14 +1,20 @@
 package godd
 
-import "github.com/gofiber/fiber/v2"
+// Map type
+type Map map[string]interface{}
 
-// Context Struct
-type Context struct {
-	Ctx               *fiber.Ctx
-	Service           interface{}
-	State             map[string]interface{}
-	ServiceOptionList map[string]interface{}
-}
+// Handler type
+type Handler func(InterfaceContext) error
+
+// FrameWork type
+type FrameWork string
+
+var (
+	// FrameWorkGofiber FrameWork
+	FrameWorkGofiber FrameWork = "gofiber"
+)
+
+// ==============================================================
 
 // Error Struct
 type Error struct {

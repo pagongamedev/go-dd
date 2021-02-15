@@ -1,19 +1,17 @@
 package godd
 
-import (
-	"github.com/gofiber/fiber/v2"
-)
-
 // MicroService Struct
 type MicroService struct {
-	router            fiber.Router
+	router            InterfaceRouter
 	service           interface{}
 	serviceOptionList map[string]interface{}
 }
 
 // NewMicroService API
-func NewMicroService(app *fiber.App, path string, service interface{}, serviceOptionList map[string]interface{}) *MicroService {
-	router := app.Group(path)
+func NewMicroService(app interface{}, path string, service interface{}, serviceOptionList map[string]interface{}, framework ...FrameWork) *MicroService {
+
+	interfaceApp := AdapterApp(app, framework...)
+	router := interfaceApp.Group(path)
 	return &MicroService{
 		router:            router,
 		service:           service,
