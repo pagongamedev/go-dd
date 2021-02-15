@@ -1,7 +1,6 @@
 package godd
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -129,14 +128,12 @@ func handlerHandlerLogicDefault() HandlerLogic {
 
 func handlerOnPostHandlerDefault() OnPostHandler {
 	return func(context InterfaceContext, code int, responseRaw interface{}, responsePaginationIn *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error) {
-		log.Println("handlerOnPostHandlerDefault : ", code, responseRaw)
 		return code, responseRaw, responsePaginationIn, nil
 	}
 }
 
 func handlerMappingResponseDefault() MappingResponse {
 	return func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error) {
-		log.Println("handlerMappingResponseDefault : ", code, responseRaw)
 		return code, responseRaw, responsePagination, nil
 	}
 }
