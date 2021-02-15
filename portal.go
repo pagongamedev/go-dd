@@ -37,7 +37,6 @@ func (pt *Portal) AppendApp(app interface{}, port string, framework ...FrameWork
 func startAppGoroutine(app appServe, errc chan error) {
 	go func() {
 		var ch chan error
-		log.Println("App Start")
 		err := app.app.Listen(app.port)
 		if err != nil {
 			ch = errc
@@ -50,7 +49,6 @@ func startAppGoroutine(app appServe, errc chan error) {
 }
 
 func shutdownAppGoroutine(app appServe) {
-	log.Println("App Shutdown")
 	MustError(app.app.Shutdown())
 }
 
@@ -87,6 +85,7 @@ func (pt *Portal) StartServer() {
 	for _, app := range pt.appList {
 		shutdownAppGoroutine(app)
 	}
+	log.Println("End Portal")
 }
 
 //================================================

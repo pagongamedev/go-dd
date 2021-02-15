@@ -1,9 +1,8 @@
 package godd
 
 import (
+	"log"
 	"net/http"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 // APIHTTP Struct
@@ -16,12 +15,14 @@ type APIHTTP struct {
 
 // apiLifeCycle Struct
 type apiLifeCycle struct {
-	OnPreAuth               HandlerCtx
-	ValidateAuth            HandlerCtx
-	OnPostAuth              HandlerCtx
-	ValidateHeaders         HandlerCtx
-	ValidateParams          HandlerCtx
-	ValidateQuery           HandlerCtx
+	OnStart                 HandlerCycle
+	ValidateLanguage        HandlerCycle
+	OnPreAuth               HandlerCycle
+	ValidateAuth            HandlerCycle
+	OnPostAuth              HandlerCycle
+	ValidateHeaders         HandlerCycle
+	ValidateParams          HandlerCycle
+	ValidateQuery           HandlerCycle
 	ParseRequest            ParseRequest
 	ValidateRequest         ValidateRequest
 	OnPreHandler            OnPreHandler
@@ -37,6 +38,8 @@ type apiLifeCycle struct {
 // NewAPIHTTP API
 func NewAPIHTTP() *APIHTTP {
 	api := apiLifeCycle{
+		OnStart:                 handlerDefault(),
+		ValidateLanguage:        handlerDefault(),
 		OnPreAuth:               handlerDefault(),
 		ValidateAuth:            handlerDefault(),
 		OnPostAuth:              handlerDefault(),
@@ -59,91 +62,93 @@ func NewAPIHTTP() *APIHTTP {
 }
 
 // HandlerByPass Type
-type HandlerByPass = func(service interface{}, serviceOptionList map[string]interface{}) fiber.Handler
+type HandlerByPass = func(service interface{}, serviceOptionList map[string]interface{}) Handler
 
-// HandlerCtx Type
-type HandlerCtx = func(context *Context) (err *Error)
+// HandlerCycle Type
+type HandlerCycle = func(context InterfaceContext) (err *Error)
 
 // ParseRequest Type
-type ParseRequest = func(context *Context) (requestMapping interface{}, err *Error)
+type ParseRequest = func(context InterfaceContext) (requestMapping interface{}, err *Error)
 
 // ValidateRequest Type
-type ValidateRequest = func(context *Context, requestMapping interface{}) (requestValidated interface{}, err *Error)
+type ValidateRequest = func(context InterfaceContext, requestMapping interface{}) (requestValidated interface{}, err *Error)
 
 // OnPreHandler Type
-type OnPreHandler = func(context *Context, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error)
+type OnPreHandler = func(context InterfaceContext, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error)
 
 // HandlerLogic Type
-type HandlerLogic = func(context *Context, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error)
+type HandlerLogic = func(context InterfaceContext, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error)
 
 // OnPostHandler Type
-type OnPostHandler = func(context *Context, code int, responseRawIn interface{}, responsePagination *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type OnPostHandler = func(context InterfaceContext, code int, responseRawIn interface{}, responsePagination *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error)
 
 // MappingResponse Type
-type MappingResponse = func(context *Context, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type MappingResponse = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error)
 
 // ValidateResponse Type
-type ValidateResponse = func(context *Context, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type ValidateResponse = func(context InterfaceContext, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, err *Error)
 
 // MappingResponseStandard Type
-type MappingResponseStandard = func(context *Context, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, err *Error)
+type MappingResponseStandard = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, err *Error)
 
 // OnPreResponse Type
-type OnPreResponse = func(context *Context, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, err *Error)
+type OnPreResponse = func(context InterfaceContext, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, err *Error)
 
 // SendResponse Type
-type SendResponse = func(context *Context, code int, requestValidated interface{}) (err *Error)
+type SendResponse = func(context InterfaceContext, code int, requestValidated interface{}) (err *Error)
 
-func handlerDefault() HandlerCtx {
-	return func(context *Context) (err *Error) {
+func handlerDefault() HandlerCycle {
+	return func(context InterfaceContext) (err *Error) {
 		return nil
 	}
 }
 
 func handlerParseRequestDefault() ParseRequest {
-	return func(context *Context) (requestMapping interface{}, err *Error) {
+	return func(context InterfaceContext) (requestMapping interface{}, err *Error) {
 		return nil, nil
 	}
 }
 
 func handlerValidateRequestDefault() ValidateRequest {
-	return func(context *Context, requestMapping interface{}) (requestValidated interface{}, err *Error) {
+	return func(context InterfaceContext, requestMapping interface{}) (requestValidated interface{}, err *Error) {
 		return nil, nil
 	}
 }
 
 func handlerOnPreHandlerDefault() OnPreHandler {
-	return func(context *Context, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error) {
+	return func(context InterfaceContext, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error) {
 		return requestValidatedIn, nil
 	}
 }
 
 func handlerHandlerLogicDefault() HandlerLogic {
-	return func(context *Context, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error) {
+	return func(context InterfaceContext, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error) {
 		return 200, nil, nil, nil
 	}
 }
 
 func handlerOnPostHandlerDefault() OnPostHandler {
-	return func(context *Context, code int, responseRawIn interface{}, responsePaginationIn *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error) {
-		return code, responseRawIn, responsePaginationIn, nil
+	return func(context InterfaceContext, code int, responseRaw interface{}, responsePaginationIn *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error) {
+		log.Println("handlerOnPostHandlerDefault : ", code, responseRaw)
+		return code, responseRaw, responsePaginationIn, nil
 	}
 }
 
 func handlerMappingResponseDefault() MappingResponse {
-	return func(context *Context, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error) {
-		return code, responseMapping, responsePagination, nil
+	return func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error) {
+		log.Println("handlerMappingResponseDefault : ", code, responseRaw)
+		return code, responseRaw, responsePagination, nil
 	}
 }
 
 func handlerValidateResponseDefault() ValidateResponse {
-	return func(context *Context, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, err *Error) {
+	return func(context InterfaceContext, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, err *Error) {
 		return code, responseMapping, responsePagination, nil
 	}
 }
 
 func handlerMappingResponseStandardDefault() MappingResponseStandard {
-	return func(context *Context, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseStandard interface{}, err *Error) {
+	return func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseStandard interface{}, err *Error) {
 
 		response, err := MappingStandard(code, responseRaw, responsePagination)
 		return code, response, err
@@ -151,15 +156,15 @@ func handlerMappingResponseStandardDefault() MappingResponseStandard {
 }
 
 func handlerOnPreResponseDefault() OnPreResponse {
-	return func(context *Context, code int, responseStandard interface{}) (codeOut int, responseStandardOut interface{}, err *Error) {
+	return func(context InterfaceContext, code int, responseStandard interface{}) (codeOut int, responseStandardOut interface{}, err *Error) {
 		return code, responseStandard, nil
 	}
 }
 
 func handlerSendResponseDefault() SendResponse {
-	return func(context *Context, code int, responseStandard interface{}) (err *Error) {
+	return func(context InterfaceContext, code int, responseStandard interface{}) (err *Error) {
 		if responseStandard != nil {
-			context.Ctx.Status(code).JSON(responseStandard)
+			context.Response(responseStandard, code)
 		}
 		return nil
 	}
@@ -173,7 +178,7 @@ func (api *APIHTTP) SetHandlerByPassLifeCycle(handler HandlerByPass) {
 }
 
 // SetupHandlerHTTP API
-func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}) fiber.Handler {
+func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}) Handler {
 	api.service = service
 	api.service = serviceOptionList
 	return api.handlerLifeCycle()
@@ -181,22 +186,27 @@ func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[
 
 // ================================================================
 
-func (api *APIHTTP) handlerLifeCycle() fiber.Handler {
+func (api *APIHTTP) handlerLifeCycle() Handler {
 	if api.handlerByPass != nil {
 		return api.handlerByPass(api.service, api.serviceOptionList)
 	}
 
-	return func(ctx *fiber.Ctx) error {
+	return func(context InterfaceContext) error {
 		// ===============================================
+		context.SetContext(api, map[string]interface{}{})
+		var err *Error
 
-		context := &Context{
-			Ctx:               ctx,
-			Service:           api.service,
-			ServiceOptionList: api.serviceOptionList,
-			State:             map[string]interface{}{},
+		// ================== Start =======================
+
+		err = api.api.OnStart(context)
+		if err != nil {
+			return encodeErrorHandler(context, err)
 		}
 
-		var err *Error
+		err = api.api.ValidateLanguage(context)
+		if err != nil {
+			return encodeErrorHandler(context, err)
+		}
 
 		// ================== Auth =======================
 
@@ -293,27 +303,27 @@ func (api *APIHTTP) handlerLifeCycle() fiber.Handler {
 //========================================
 
 // OnPreAuth func
-func (api *APIHTTP) OnPreAuth(handler HandlerCtx) {
+func (api *APIHTTP) OnPreAuth(handler HandlerCycle) {
 	api.api.OnPreAuth = handler
 }
 
 // ValidateAuth func
-func (api *APIHTTP) ValidateAuth(handler HandlerCtx) {
+func (api *APIHTTP) ValidateAuth(handler HandlerCycle) {
 	api.api.ValidateAuth = handler
 }
 
 // ValidateHeaders func
-func (api *APIHTTP) ValidateHeaders(handler HandlerCtx) {
+func (api *APIHTTP) ValidateHeaders(handler HandlerCycle) {
 	api.api.ValidateHeaders = handler
 }
 
 // ValidateParams func
-func (api *APIHTTP) ValidateParams(handler HandlerCtx) {
+func (api *APIHTTP) ValidateParams(handler HandlerCycle) {
 	api.api.ValidateParams = handler
 }
 
 // ValidateQuery func
-func (api *APIHTTP) ValidateQuery(handler HandlerCtx) {
+func (api *APIHTTP) ValidateQuery(handler HandlerCycle) {
 	api.api.ValidateQuery = handler
 }
 
@@ -364,7 +374,7 @@ func (api *APIHTTP) SendResponse(handler SendResponse) {
 
 //========================================
 
-func encodeErrorHandler(context *Context, err *Error) error {
+func encodeErrorHandler(context InterfaceContext, err *Error) error {
 	var errorMessage string
 	if err.Error != nil {
 		errorMessage = err.Error.Error()
@@ -372,16 +382,18 @@ func encodeErrorHandler(context *Context, err *Error) error {
 		errorMessage = http.StatusText(err.Code)
 	}
 	// errorreporting.LogError(errors.New(errorMessage))
-	context.Ctx.Context().SetContentType("application/json; charset=utf-8")
+	context.SetContentType("application/json; charset=utf-8")
 
-	context.Ctx.Status(err.Code).JSON(ResponseDataList{
-		Success: false,
-		Message: "unsuccess",
-		ResponseError: &ResponseError{
-			Message: errorMessage,
+	context.Response(
+		ResponseDataList{
+			Success: false,
+			Message: "unsuccess",
+			ResponseError: &ResponseError{
+				Message: errorMessage,
+			},
 		},
-	})
-
+		err.Code,
+	)
 	return nil
 }
 
