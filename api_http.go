@@ -16,12 +16,12 @@ type APIHTTP struct {
 
 // apiLifeCycle Struct
 type apiLifeCycle struct {
-	OnPreAuth               Handler
-	ValidateAuth            Handler
-	OnPostAuth              Handler
-	ValidateHeaders         Handler
-	ValidateParams          Handler
-	ValidateQuery           Handler
+	OnPreAuth               HandlerCtx
+	ValidateAuth            HandlerCtx
+	OnPostAuth              HandlerCtx
+	ValidateHeaders         HandlerCtx
+	ValidateParams          HandlerCtx
+	ValidateQuery           HandlerCtx
 	ParseRequest            ParseRequest
 	ValidateRequest         ValidateRequest
 	OnPreHandler            OnPreHandler
@@ -34,7 +34,7 @@ type apiLifeCycle struct {
 	SendResponse            SendResponse
 }
 
-// NewAPI API
+// NewAPIHTTP API
 func NewAPIHTTP() *APIHTTP {
 	api := apiLifeCycle{
 		OnPreAuth:               handlerDefault(),
@@ -61,8 +61,8 @@ func NewAPIHTTP() *APIHTTP {
 // HandlerByPass Type
 type HandlerByPass = func(service interface{}, serviceOptionList map[string]interface{}) fiber.Handler
 
-// Handler Type
-type Handler = func(context *Context) (err *Error)
+// HandlerCtx Type
+type HandlerCtx = func(context *Context) (err *Error)
 
 // ParseRequest Type
 type ParseRequest = func(context *Context) (requestMapping interface{}, err *Error)
@@ -94,7 +94,7 @@ type OnPreResponse = func(context *Context, code int, requestValidatedIn interfa
 // SendResponse Type
 type SendResponse = func(context *Context, code int, requestValidated interface{}) (err *Error)
 
-func handlerDefault() Handler {
+func handlerDefault() HandlerCtx {
 	return func(context *Context) (err *Error) {
 		return nil
 	}
@@ -293,27 +293,27 @@ func (api *APIHTTP) handlerLifeCycle() fiber.Handler {
 //========================================
 
 // OnPreAuth func
-func (api *APIHTTP) OnPreAuth(handler Handler) {
+func (api *APIHTTP) OnPreAuth(handler HandlerCtx) {
 	api.api.OnPreAuth = handler
 }
 
 // ValidateAuth func
-func (api *APIHTTP) ValidateAuth(handler Handler) {
+func (api *APIHTTP) ValidateAuth(handler HandlerCtx) {
 	api.api.ValidateAuth = handler
 }
 
 // ValidateHeaders func
-func (api *APIHTTP) ValidateHeaders(handler Handler) {
+func (api *APIHTTP) ValidateHeaders(handler HandlerCtx) {
 	api.api.ValidateHeaders = handler
 }
 
 // ValidateParams func
-func (api *APIHTTP) ValidateParams(handler Handler) {
+func (api *APIHTTP) ValidateParams(handler HandlerCtx) {
 	api.api.ValidateParams = handler
 }
 
 // ValidateQuery func
-func (api *APIHTTP) ValidateQuery(handler Handler) {
+func (api *APIHTTP) ValidateQuery(handler HandlerCtx) {
 	api.api.ValidateQuery = handler
 }
 

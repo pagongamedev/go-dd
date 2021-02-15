@@ -6,7 +6,7 @@ import (
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/pagongamedev/godd/middleware"
+	"github.com/pagongamedev/go-dd/middleware"
 )
 
 // =====================================================================
@@ -25,18 +25,20 @@ func MustError(err error, strList ...string) {
 }
 
 // AddAPIGetHealth Func
-func addAPIGetHealth(app *fiber.App) {
+func addAPIGetHealth(app InterfaceApp) {
 	app.Get("/health", handlerHealth())
 }
 
-func handlerHealth() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"success": true})
+func handlerHealth() Handler {
+	return func(ctx InterfaceContext) error {
+		return ctx.Response(Map{"success": true})
 	}
 }
 
-// AppAPIDocument Func
-func AppAPIDocument() *fiber.App {
+//=============== Gofiber ======================
+
+// AppGofiberAPIDocument Func
+func AppGofiberAPIDocument() *fiber.App {
 	app := fiber.New()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/swagger/index.html", http.StatusMovedPermanently)
@@ -45,8 +47,8 @@ func AppAPIDocument() *fiber.App {
 	return app
 }
 
-// AppMetricsPrometheus Func
-func AppMetricsPrometheus(mainApp *fiber.App) *fiber.App {
+// AppGofiberMetricsPrometheus Func
+func AppGofiberMetricsPrometheus(mainApp *fiber.App) *fiber.App {
 	app := fiber.New()
 	mdwPrometheus := middleware.NewPrometheus("fiber", "http")
 	mdwPrometheus.Register(mainApp)

@@ -11,7 +11,7 @@ var ms *godd.MicroService
 func Router(app *fiber.App, path string) *godd.MicroService {
 	ms = godd.NewMicroService(app, path, nil, nil)
 
-	ms.Get("/health", HandlerHealth())
+	// ms.Get("/health", HandlerHealth())
 
 	return ms
 }
