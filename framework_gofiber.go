@@ -241,3 +241,61 @@ func (context *ContextGofiber) SetState(name string, value interface{}) {
 func (context *ContextGofiber) SetContentType(str string) {
 	context.ctx.Context().SetContentType(str)
 }
+
+//SetHeader func
+func (context *ContextGofiber) SetHeader(key string, val string) {
+	context.ctx.Set(key, val)
+}
+
+//GetHeader func
+func (context *ContextGofiber) GetHeader(key string, defaultValue ...string) string {
+	return context.ctx.Get(key, defaultValue...)
+}
+
+//GetQuery func
+func (context *ContextGofiber) GetQuery(key string, defaultValue ...string) string {
+	return context.ctx.Query(key, defaultValue...)
+}
+
+//QueryParser func
+func (context *ContextGofiber) QueryParser(out interface{}) error {
+	return context.ctx.QueryParser(out)
+}
+
+//GetParam func
+func (context *ContextGofiber) GetParam(key string, defaultValue ...string) string {
+	return context.ctx.Params(key, defaultValue...)
+}
+
+//GetBody func
+func (context *ContextGofiber) GetBody() []byte {
+	return context.ctx.Body()
+}
+
+//BodyParser func
+func (context *ContextGofiber) BodyParser(out interface{}) error {
+	return context.ctx.BodyParser(out)
+}
+
+//GetCookie func
+func (context *ContextGofiber) GetCookie(key string, val string) {
+	context.ctx.Cookies(key, val)
+}
+
+//SetCookie func
+func (context *ContextGofiber) SetCookie(cookie interface{}) {
+	c := cookie.(*fiber.Cookie)
+	context.ctx.Cookie(c)
+}
+
+//ClearCookie func
+func (context *ContextGofiber) ClearCookie(key ...string) {
+	context.ctx.ClearCookie(key...)
+}
+
+//===========
+
+// Log func
+func (context *ContextGofiber) Log(v ...interface{}) {
+	log.Println(v...)
+}

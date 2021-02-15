@@ -43,6 +43,24 @@ type InterfaceContext interface {
 	SetState(name string, value interface{})
 
 	SetContentType(str string)
+
+	SetHeader(key string, val string)
+	GetHeader(key string, defaultValue ...string) string
+
+	GetQuery(key string, defaultValue ...string) string
+	QueryParser(out interface{}) error
+
+	GetParam(key string, defaultValue ...string) string
+
+	GetBody() []byte
+	BodyParser(out interface{}) error
+
+	GetCookie(key string, val string)
+	SetCookie(cookie interface{})
+
+	ClearCookie(key ...string)
+
+	Log(v ...interface{})
 }
 
 // Get(path string, handlers ...Handler) Router
