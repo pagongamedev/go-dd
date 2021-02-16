@@ -6,3 +6,15 @@ other = "{{.Name}} มีแมว {{.Count}} ตัว"
 [validate_required]
 description = "เช็ค ช่องว่าง"
 other = "ช่อง \"{{.Field}}\" ว่าง กรุณากรอกให้ครบ"
+
+[validate_email]
+description = "เช็ค ช่องว่าง"
+other = "ช่อง \"{{.Field}}\" กรุณากรอกอีเมลให้ถูกต้อง"
+
+[validate_min]
+description = "เช็ค ตัวอักษรขั้นต้ำ"
+other = "ช่อง \"{{.Field}}\" ค่าต้องมากกว่า {{.Param}} ตัวอักษร"
+
+[validate_max]
+description = "เช็ค ตัวอักษรมากสุด"
+other = "ช่อง \"{{.Field}}\" ค่าต้องน้อยกว่า {{.Param}} ตัวอักษร"

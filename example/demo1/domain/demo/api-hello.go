@@ -45,29 +45,29 @@ func HandlerHello() *godd.APIHTTP {
 		// accept := "en-EN"
 		// localizer := i18n.NewLocalizer(bundle, accept)
 
-		mes := context.MustLocalize("validate_required", godd.Map{"Field": "is_active"}, 0)
-		println(mes)
+		// mes := context.MustLocalize("validate_required", godd.Map{"Field": "is_active"}, 0)
+		// println(mes)
 
-		// //errors := ValidateStruct(*user)
-		// x := godd.Map{
-		// 	"User": &User{},
-		// 	"Job":  &Job{},
-		// }
+		//errors := ValidateStruct(*user)
+		x := godd.Map{
+			"User": &User{},
+			"Job":  &Job{},
+		}
 
-		// errors := godd.ValidateStruct(User{
-		// 	Name:     "T",
-		// 	IsActive: false,
-		// 	Email:    "a",
-		// 	Job: Job{
-		// 		Type:   "E",
-		// 		Salary: 20,
-		// 	},
-		// }, x)
+		errors := context.ValidateStruct(User{
+			Name:     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+			IsActive: false,
+			Email:    "a",
+			Job: Job{
+				Type:   "E",
+				Salary: 200,
+			},
+		}, x)
 
-		// if errors != nil {
-		// 	// c.JSON(errors)
-		// 	return http.StatusBadRequest, nil, nil, errors
-		// }
+		if errors != nil {
+			// c.JSON(errors)
+			return http.StatusBadRequest, nil, nil, errors
+		}
 
 		return http.StatusOK, godd.Map{"message": "x"}, nil, nil
 	})

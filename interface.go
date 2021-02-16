@@ -67,6 +67,10 @@ type InterfaceContext interface {
 	SetLang(lang string)
 	GetLang() string
 	MustLocalize(id string, data Map, count int, m ...interface{}) string
+
+	// ====== Validate Struct
+
+	ValidateStruct(i interface{}, iType map[string]interface{}) *Error
 }
 
 // Get(path string, handlers ...Handler) Router

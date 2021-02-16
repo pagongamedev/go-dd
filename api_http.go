@@ -1,7 +1,6 @@
 package godd
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -109,7 +108,7 @@ func handlerParseLanguage() HandlerCycle {
 
 		acceptLanguage := context.GetHeader("Accept-Language")
 		if acceptLanguage == "" {
-			acceptLanguage = "en-EN"
+			acceptLanguage = "en-US"
 		}
 
 		context.SetLang(acceptLanguage)
@@ -504,7 +503,6 @@ func encodeErrorHandler(context InterfaceContext, err *Error) error {
 	// errorreporting.LogError(errors.New(errorMessage))
 	context.SetContentType("application/json; charset=utf-8")
 
-	log.Println("Co : ", err.Code)
 	context.Response(
 		ResponseDataList{
 			Success: false,

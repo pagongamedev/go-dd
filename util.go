@@ -39,7 +39,7 @@ func handlerHealth() Handler {
 // =========================================
 
 // ValidateStruct func
-func ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
+func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]interface{}) *Error {
 	var errValidateList *map[string]ErrorValidate
 	validate := validator.New()
 	err := validate.Struct(i)
@@ -60,10 +60,9 @@ func ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
 				v.ReasonList = map[string]ErrorValidateReason{}
 			}
 			v.ReasonList[err.Tag()] = ErrorValidateReason{
-				Message: "",
+				Message: context.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
 				Param:   err.Param(),
 			}
-
 			(*errValidateList)[fieldName] = v
 		}
 	}

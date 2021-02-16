@@ -322,3 +322,8 @@ func (context *ContextGofiber) GetLang() string {
 func (context *ContextGofiber) MustLocalize(id string, data Map, count int, m ...interface{}) string {
 	return context.i18n.MustLocalize(context.lang, id, data, count, m...)
 }
+
+// ValidateStruct func
+func (context *ContextGofiber) ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
+	return ValidateStruct(context, i, iType)
+}
