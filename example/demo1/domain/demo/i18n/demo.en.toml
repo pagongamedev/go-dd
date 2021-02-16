@@ -1,0 +1,9 @@
+# active.en.toml
+[PersonCats]
+description = "The number of cats a person has"
+one = "{{.Name}} has {{.Count}} cat."
+other = "{{.Name}} has {{.Count}} cats."
+
+[validate_required]
+description = "check empty"
+other = "\"{{.Field}}\" is empty please refill"

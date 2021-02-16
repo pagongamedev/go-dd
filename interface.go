@@ -61,6 +61,12 @@ type InterfaceContext interface {
 	ClearCookie(key ...string)
 
 	Log(v ...interface{})
+
+	// ========== i18n
+
+	SetLang(lang string)
+	GetLang() string
+	MustLocalize(id string, data Map, count int, m ...interface{}) string
 }
 
 // Get(path string, handlers ...Handler) Router

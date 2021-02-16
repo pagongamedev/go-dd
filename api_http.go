@@ -11,12 +11,13 @@ type APIHTTP struct {
 	api               *apiLifeCycle
 	service           interface{}
 	serviceOptionList map[string]interface{}
+	i18n              *I18N
 }
 
 // apiLifeCycle Struct
 type apiLifeCycle struct {
 	OnStart                 HandlerCycle
-	ValidateLanguage        HandlerCycle
+	ParseLanguage           HandlerCycle
 	OnPreAuth               HandlerCycle
 	ValidateAuth            HandlerCycle
 	OnPostAuth              HandlerCycle
@@ -39,7 +40,7 @@ type apiLifeCycle struct {
 func NewAPIHTTP() *APIHTTP {
 	api := apiLifeCycle{
 		OnStart:                 handlerDefault(),
-		ValidateLanguage:        handlerDefault(),
+		ParseLanguage:           handlerParseLanguage(),
 		OnPreAuth:               handlerDefault(),
 		ValidateAuth:            handlerDefault(),
 		OnPostAuth:              handlerDefault(),
@@ -99,6 +100,20 @@ type SendResponse = func(context InterfaceContext, code int, requestValidated in
 
 func handlerDefault() HandlerCycle {
 	return func(context InterfaceContext) (err *Error) {
+		return nil
+	}
+}
+
+func handlerParseLanguage() HandlerCycle {
+	return func(context InterfaceContext) (err *Error) {
+
+		acceptLanguage := context.GetHeader("Accept-Language")
+		if acceptLanguage == "" {
+			acceptLanguage = "en-EN"
+		}
+
+		context.SetLang(acceptLanguage)
+
 		return nil
 	}
 }
@@ -176,9 +191,10 @@ func (api *APIHTTP) SetHandlerByPassLifeCycle(handler HandlerByPass) {
 }
 
 // SetupHandlerHTTP API
-func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}) Handler {
+func (api *APIHTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}, i18n *I18N) Handler {
 	api.service = service
 	api.serviceOptionList = serviceOptionList
+	api.i18n = i18n
 	return api.handlerLifeCycle()
 }
 
@@ -201,7 +217,7 @@ func (api *APIHTTP) handlerLifeCycle() Handler {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.api.ValidateLanguage(context)
+		err = api.api.ParseLanguage(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
@@ -300,6 +316,16 @@ func (api *APIHTTP) handlerLifeCycle() Handler {
 
 //========================================
 
+// OnStart func
+func (api *APIHTTP) OnStart(handler HandlerCycle) {
+	api.api.OnStart = handler
+}
+
+// ParseLanguage func
+func (api *APIHTTP) ParseLanguage(handler HandlerCycle) {
+	api.api.ParseLanguage = handler
+}
+
 // OnPreAuth func
 func (api *APIHTTP) OnPreAuth(handler HandlerCycle) {
 	api.api.OnPreAuth = handler
@@ -368,6 +394,98 @@ func (api *APIHTTP) OnPreResponse(handler OnPreResponse) {
 // SendResponse func
 func (api *APIHTTP) SendResponse(handler SendResponse) {
 	api.api.SendResponse = handler
+}
+
+//========================================
+
+// GetOnStart func
+func (api *APIHTTP) GetOnStart() HandlerCycle {
+	return api.api.OnStart
+}
+
+// GetParseLanguage func
+func (api *APIHTTP) GetParseLanguage() HandlerCycle {
+	return api.api.ParseLanguage
+}
+
+// GetOnPreAuth func
+func (api *APIHTTP) GetOnPreAuth() HandlerCycle {
+	return api.api.OnPreAuth
+}
+
+// GetValidateAuth func
+func (api *APIHTTP) GetValidateAuth() HandlerCycle {
+	return api.api.ValidateAuth
+}
+
+// GetOnPostAuth func
+func (api *APIHTTP) GetOnPostAuth() HandlerCycle {
+	return api.api.OnPostAuth
+}
+
+// GetValidateHeaders func
+func (api *APIHTTP) GetValidateHeaders() HandlerCycle {
+	return api.api.ValidateHeaders
+}
+
+// GetValidateParams func
+func (api *APIHTTP) GetValidateParams() HandlerCycle {
+	return api.api.ValidateParams
+}
+
+// GetValidateQuery func
+func (api *APIHTTP) GetValidateQuery() HandlerCycle {
+	return api.api.ValidateQuery
+}
+
+// GetParseRequest func
+func (api *APIHTTP) GetParseRequest() ParseRequest {
+	return api.api.ParseRequest
+}
+
+// GetValidateRequest func
+func (api *APIHTTP) GetValidateRequest() ValidateRequest {
+	return api.api.ValidateRequest
+}
+
+// GetOnPreHandler func
+func (api *APIHTTP) GetOnPreHandler() OnPreHandler {
+	return api.api.OnPreHandler
+}
+
+// GetHandlerLogic func
+func (api *APIHTTP) GetHandlerLogic() HandlerLogic {
+	return api.api.HandlerLogic
+}
+
+// GetOnPostHandler func
+func (api *APIHTTP) GetOnPostHandler() OnPostHandler {
+	return api.api.OnPostHandler
+}
+
+// GetMappingResponse func
+func (api *APIHTTP) GetMappingResponse() MappingResponse {
+	return api.api.MappingResponse
+}
+
+// GetValidateResponse func
+func (api *APIHTTP) GetValidateResponse() ValidateResponse {
+	return api.api.ValidateResponse
+}
+
+// GetMappingResponseStandard func
+func (api *APIHTTP) GetMappingResponseStandard() MappingResponseStandard {
+	return api.api.MappingResponseStandard
+}
+
+// GetOnPreResponse func
+func (api *APIHTTP) GetOnPreResponse() OnPreResponse {
+	return api.api.OnPreResponse
+}
+
+// GetSendResponse func
+func (api *APIHTTP) GetSendResponse() SendResponse {
+	return api.api.SendResponse
 }
 
 //========================================

@@ -5,7 +5,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
 )
 
 // =====================================================================
@@ -88,3 +90,65 @@ func getNameField(i interface{}, str string) string {
 }
 
 // =========================================
+
+// I18N func
+type I18N struct {
+	bundle        *i18n.Bundle
+	localizerList map[string]*i18n.Localizer
+}
+
+// NewI18N func
+func NewI18N(defaultLanguage language.Tag, formatUnmarshal string, unmarshalFunc i18n.UnmarshalFunc, fileLanguageList Map) *I18N {
+	bundle := i18n.NewBundle(defaultLanguage)
+	bundle.RegisterUnmarshalFunc(formatUnmarshal, unmarshalFunc)
+
+	localizerList := map[string]*i18n.Localizer{}
+
+	for key, fileLanguage := range fileLanguageList {
+		var k string
+		keyList := strings.Split(key, "-")
+		k = key
+		if len(keyList) > 0 {
+			k = keyList[0]
+		}
+		bundle.LoadMessageFile(fileLanguage.(string))
+		localizerList[k] = i18n.NewLocalizer(bundle, key)
+	}
+
+	return &I18N{
+		bundle:        bundle,
+		localizerList: localizerList,
+	}
+}
+
+//MustLocalize func
+func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...interface{}) string {
+	var iMessage *i18n.Message
+	if len(m) > 0 {
+		iMessage = m[0].(*i18n.Message)
+	} else {
+		iMessage = &i18n.Message{
+			ID: id,
+		}
+	}
+	l := lang
+	langList := strings.Split(lang, ",")
+	if len(langList) > 0 {
+		l = langList[0]
+		langList = strings.Split(l, "-")
+		if len(langList) > 0 {
+			l = langList[0]
+		}
+	}
+
+	localizer := (i.localizerList[l])
+	if localizer != nil {
+		return localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				DefaultMessage: iMessage,
+				TemplateData:   data,
+				PluralCount:    count,
+			})
+	}
+	return ""
+}

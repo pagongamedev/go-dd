@@ -34,32 +34,42 @@ func HandlerHello() *godd.APIHTTP {
 			// return
 		}
 
+		// lang              string
+
+		//accept := r.Header.Get("Accept-Language")
+		// accept := "th-TH"
 		// field, _ := reflect.TypeOf(user).Elem().FieldByName("IsActive")
 		// tag := string(field.Tag)
 		// log.Println("Tag : ", tag)
 
-		//errors := ValidateStruct(*user)
-		x := map[string]interface{}{
-			"User": &User{},
-			"Job":  &Job{},
-		}
+		// accept := "en-EN"
+		// localizer := i18n.NewLocalizer(bundle, accept)
 
-		errors := godd.ValidateStruct(User{
-			Name:     "T",
-			IsActive: false,
-			Email:    "a",
-			Job: Job{
-				Type:   "E",
-				Salary: 20,
-			},
-		}, x)
+		mes := context.MustLocalize("validate_required", godd.Map{"Field": "is_active"}, 0)
+		println(mes)
 
-		if errors != nil {
-			// c.JSON(errors)
-			return http.StatusBadRequest, nil, nil, errors
-		}
+		// //errors := ValidateStruct(*user)
+		// x := godd.Map{
+		// 	"User": &User{},
+		// 	"Job":  &Job{},
+		// }
 
-		return http.StatusOK, godd.Map{"message": "Helllllo"}, nil, nil
+		// errors := godd.ValidateStruct(User{
+		// 	Name:     "T",
+		// 	IsActive: false,
+		// 	Email:    "a",
+		// 	Job: Job{
+		// 		Type:   "E",
+		// 		Salary: 20,
+		// 	},
+		// }, x)
+
+		// if errors != nil {
+		// 	// c.JSON(errors)
+		// 	return http.StatusBadRequest, nil, nil, errors
+		// }
+
+		return http.StatusOK, godd.Map{"message": "x"}, nil, nil
 	})
 	return api
 }

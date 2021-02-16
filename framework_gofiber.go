@@ -170,6 +170,8 @@ type ContextGofiber struct {
 	Service           interface{}
 	State             map[string]interface{}
 	ServiceOptionList map[string]interface{}
+	i18n              *I18N
+	lang              string
 }
 
 // GetFramework func
@@ -205,6 +207,7 @@ func (context *ContextGofiber) SetContext(api *APIHTTP, state map[string]interfa
 	context.Service = api.service
 	context.ServiceOptionList = api.serviceOptionList
 	context.State = state
+	context.i18n = api.i18n
 }
 
 // GetService func
@@ -301,4 +304,21 @@ func (context *ContextGofiber) ClearCookie(key ...string) {
 // Log func
 func (context *ContextGofiber) Log(v ...interface{}) {
 	log.Println(v...)
+}
+
+//===========
+
+//SetLang func
+func (context *ContextGofiber) SetLang(lang string) {
+	context.lang = lang
+}
+
+//GetLang func
+func (context *ContextGofiber) GetLang() string {
+	return context.lang
+}
+
+// MustLocalize func
+func (context *ContextGofiber) MustLocalize(id string, data Map, count int, m ...interface{}) string {
+	return context.i18n.MustLocalize(context.lang, id, data, count, m...)
 }
