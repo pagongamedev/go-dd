@@ -18,8 +18,20 @@ var (
 
 // Error Struct
 type Error struct {
-	Code  int // Please Use http.Status
-	Error error
+	Code          int // Please Use http.Status
+	Error         error
+	ErrorValidate *map[string]ErrorValidate
+}
+
+// ErrorValidate struct
+type ErrorValidate struct {
+	ReasonList map[string]ErrorValidateReason `json:"reasons"`
+}
+
+// ErrorValidateReason struct
+type ErrorValidateReason struct {
+	Message string `json:"message"`
+	Param   string `json:"param,omitempty"`
 }
 
 // ==============================================================
@@ -53,5 +65,6 @@ type ResponsePagination struct {
 
 // ResponseError Struct
 type ResponseError struct {
-	Message string `json:"message" swaggertype:"string"`
+	Message  string                    `json:"message" swaggertype:"string"`
+	Validate *map[string]ErrorValidate `json:"validate,omitempty" swaggertype:"object"`
 }

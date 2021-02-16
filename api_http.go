@@ -1,6 +1,7 @@
 package godd
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -372,6 +373,10 @@ func (api *APIHTTP) SendResponse(handler SendResponse) {
 //========================================
 
 func encodeErrorHandler(context InterfaceContext, err *Error) error {
+	if err.ErrorValidate != nil {
+		err.Code = http.StatusBadRequest
+	}
+
 	var errorMessage string
 	if err.Error != nil {
 		errorMessage = err.Error.Error()
@@ -381,12 +386,14 @@ func encodeErrorHandler(context InterfaceContext, err *Error) error {
 	// errorreporting.LogError(errors.New(errorMessage))
 	context.SetContentType("application/json; charset=utf-8")
 
+	log.Println("Co : ", err.Code)
 	context.Response(
 		ResponseDataList{
 			Success: false,
 			Message: "unsuccess",
 			ResponseError: &ResponseError{
-				Message: errorMessage,
+				Message:  errorMessage,
+				Validate: err.ErrorValidate,
 			},
 		},
 		err.Code,

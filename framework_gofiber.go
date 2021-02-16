@@ -184,6 +184,9 @@ func (context *ContextGofiber) GetFrameworkContext() interface{} {
 
 // Response func
 func (context *ContextGofiber) Response(responseDataList interface{}, responseCode ...int) error {
+	if len(responseCode) > 0 {
+		context.ctx.Status(responseCode[0])
+	}
 	return context.ctx.JSON(responseDataList)
 }
 
