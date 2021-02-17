@@ -24,7 +24,7 @@ type User struct {
 func HandlerHello() *godd.APIHTTP {
 	api := godd.NewAPIHTTP()
 
-	api.HandlerLogic(func(context godd.InterfaceContext, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
+	api.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
 		user := new(User)
 
 		if err := context.BodyParser(user); err != nil {

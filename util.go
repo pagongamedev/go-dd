@@ -156,3 +156,34 @@ func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...in
 	}
 	return ""
 }
+
+//====================
+
+// EnvironmentSwitcher func
+func EnvironmentSwitcher(env string, Localhost int, Development int, UAT int, Staging int, Production int, i ...interface{}) interface{} {
+	var index int
+	switch env {
+	case "localhost":
+		index = Localhost
+		break
+	case "development":
+		index = Development
+		break
+	case "uat":
+		index = UAT
+		break
+	case "staging":
+		index = Staging
+		break
+	case "production":
+		index = Production
+		break
+	}
+
+	if index < 0 || index > len(i)-1 {
+		log.Println("Out of Length")
+		return nil
+	}
+
+	return i[index]
+}

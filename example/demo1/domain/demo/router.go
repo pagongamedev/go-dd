@@ -21,5 +21,8 @@ func Router(app *fiber.App, path string) *godd.MicroService {
 	ms = godd.NewMicroService(app, path, nil, nil, i18n)
 	ms.Get("/hello", HandlerHello())
 
+	// repo := godd.EnvironmentSwitcher("localhost", 0, 0, 1, 1, 2, "A", "B", "C", "D")
+	// log.Println("repo", repo)
+
 	return ms
 }
