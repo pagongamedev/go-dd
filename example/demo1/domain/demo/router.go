@@ -14,8 +14,8 @@ func Router(app *fiber.App, path string) *godd.MicroService {
 
 	i18n := godd.NewI18N(language.English, "toml", toml.Unmarshal,
 		godd.Map{
-			"en-US": "example/demo1/domain/demo/i18n/demo.en.toml",
-			"th-TH": "example/demo1/domain/demo/i18n/demo.th.toml",
+			"en": "example/demo1/domain/demo/i18n/demo.en.toml",
+			"th": "example/demo1/domain/demo/i18n/demo.th.toml",
 		})
 
 	ms = godd.NewMicroService(app, path, nil, nil, i18n)

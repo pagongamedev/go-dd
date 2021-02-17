@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
+	"gopkg.in/mcuadros/go-defaults.v1"
 )
 
 // =====================================================================
@@ -40,12 +41,12 @@ func handlerHealth() Handler {
 
 // ValidateStruct func
 func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]interface{}) *Error {
-	var errValidateList *map[string]ErrorValidate
+	var errList *map[string]ErrorValidate
 	validate := validator.New()
 	err := validate.Struct(i)
 
 	if err != nil {
-		errValidateList = &map[string]ErrorValidate{}
+		errList = &map[string]ErrorValidate{}
 		for _, err := range err.(validator.ValidationErrors) {
 
 			ss := strings.Split(err.Namespace(), ".")
@@ -54,22 +55,18 @@ func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]in
 				length = 0
 			}
 			fieldName := getNameField(iType[ss[length]], err.Field())
-			v := (*errValidateList)[fieldName]
-
-			if v.ReasonList == nil {
-				v.ReasonList = map[string]ErrorValidateReason{}
-			}
-			v.ReasonList[err.Tag()] = ErrorValidateReason{
-				Message: context.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
+			(*errList)[fieldName] = ErrorValidate{
+				Reason:  err.Tag(),
 				Param:   err.Param(),
+				Message: context.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
 			}
-			(*errValidateList)[fieldName] = v
+
 		}
 	}
 
-	if errValidateList != nil {
+	if errList != nil {
 		return &Error{
-			ErrorValidate: errValidateList,
+			ErrorValidate: errList,
 		}
 	}
 	return nil
@@ -86,6 +83,14 @@ func getNameField(i interface{}, str string) string {
 		return s
 	}
 	return str
+}
+
+// =========================================
+
+// SetDefaultStruct func
+func SetDefaultStruct(variable interface{}) interface{} {
+	defaults.SetDefaults(variable) //<-- This set the defaults values
+	return variable
 }
 
 // =========================================

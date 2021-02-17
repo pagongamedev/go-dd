@@ -25,13 +25,13 @@ type Error struct {
 
 // ErrorValidate struct
 type ErrorValidate struct {
-	ReasonList map[string]ErrorValidateReason `json:"reasons"`
+	Reason  string `json:"reason"`
+	Message string `json:"message"`
+	Param   string `json:"param,omitempty"`
 }
 
 // ErrorValidateReason struct
 type ErrorValidateReason struct {
-	Message string `json:"message"`
-	Param   string `json:"param,omitempty"`
 }
 
 // ==============================================================

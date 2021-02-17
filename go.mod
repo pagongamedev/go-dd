@@ -13,4 +13,5 @@ require (
 	github.com/swaggo/swag v1.7.0
 	github.com/valyala/fasthttp v1.20.0
 	golang.org/x/text v0.3.4
+	gopkg.in/mcuadros/go-defaults.v1 v1.1.0
 )

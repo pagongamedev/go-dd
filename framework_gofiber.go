@@ -327,3 +327,8 @@ func (context *ContextGofiber) MustLocalize(id string, data Map, count int, m ..
 func (context *ContextGofiber) ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
 	return ValidateStruct(context, i, iType)
 }
+
+// SetDefaultStruct func
+func (context *ContextGofiber) SetDefaultStruct(i interface{}) interface{} {
+	return SetDefaultStruct(i)
+}

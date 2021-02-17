@@ -8,16 +8,16 @@ import (
 
 // Job struct
 type Job struct {
-	Type   string `json:"type" validate:"required,min=3,max=32"`
-	Salary int    `json:"salary" validate:"required,number"`
+	Type   string `json:"type"   default:"none" validate:"required,min=3,max=32"`
+	Salary int    `json:"salary" default:"200"  validate:"required,number"`
 }
 
 //User struct
 type User struct {
-	Name     string `json:"name" validate:"required,min=3,max=32"`
-	IsActive bool   `json:"is_active" validate:"required,eq=True|eq=False"`
-	Email    string `json:"email"   validate:"required,email,min=6,max=32"`
-	Job      Job    `json:"job"  validate:"dive"`
+	Name     string `json:"name"      default:"john" validate:"required,min=3,max=32"`
+	IsActive bool   `json:"is_active" default:"true" validate:"required,eq=True|eq=False"`
+	Email    string `json:"email"                    validate:"required,email,min=6,max=32"`
+	Job      Job    `json:"job"                      validate:"dive"`
 }
 
 // HandlerHello API
@@ -34,42 +34,29 @@ func HandlerHello() *godd.APIHTTP {
 			// return
 		}
 
-		// lang              string
+		context.SetDefaultStruct(user)
 
-		//accept := r.Header.Get("Accept-Language")
-		// accept := "th-TH"
-		// field, _ := reflect.TypeOf(user).Elem().FieldByName("IsActive")
-		// tag := string(field.Tag)
-		// log.Println("Tag : ", tag)
+		// x := godd.Map{
+		// 	"User": &User{},
+		// 	"Job":  &Job{},
+		// }
 
-		// accept := "en-EN"
-		// localizer := i18n.NewLocalizer(bundle, accept)
+		// errors := context.ValidateStruct(User{
+		// 	Name:     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+		// 	IsActive: false,
+		// 	Email:    "a",
+		// 	Job: Job{
+		// 		Type:   "E",
+		// 		Salary: 200,
+		// 	},
+		// }, x)
 
-		// mes := context.MustLocalize("validate_required", godd.Map{"Field": "is_active"}, 0)
-		// println(mes)
+		// if errors != nil {
+		// 	// c.JSON(errors)
+		// 	return http.StatusBadRequest, nil, nil, errors
+		// }
 
-		//errors := ValidateStruct(*user)
-		x := godd.Map{
-			"User": &User{},
-			"Job":  &Job{},
-		}
-
-		errors := context.ValidateStruct(User{
-			Name:     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
-			IsActive: false,
-			Email:    "a",
-			Job: Job{
-				Type:   "E",
-				Salary: 200,
-			},
-		}, x)
-
-		if errors != nil {
-			// c.JSON(errors)
-			return http.StatusBadRequest, nil, nil, errors
-		}
-
-		return http.StatusOK, godd.Map{"message": "x"}, nil, nil
+		return http.StatusOK, user, nil, nil
 	})
 	return api
 }

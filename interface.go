@@ -71,6 +71,7 @@ type InterfaceContext interface {
 	// ====== Validate Struct
 
 	ValidateStruct(i interface{}, iType map[string]interface{}) *Error
+	SetDefaultStruct(i interface{}) interface{}
 }
 
 // Get(path string, handlers ...Handler) Router
