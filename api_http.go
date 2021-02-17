@@ -20,9 +20,9 @@ type apiLifeCycle struct {
 	OnPreAuth               HandlerCycle
 	ValidateAuth            HandlerCycle
 	OnPostAuth              HandlerCycle
-	ValidateHeaders         HandlerCycle
-	ValidateParams          HandlerCycle
-	ValidateQuery           HandlerCycle
+	ValidateHeader          HandlerCycle
+	ValidateParam           ValidateParam
+	ValidateQuery           ValidateQuery
 	ParseRequest            ParseRequest
 	ValidateRequest         ValidateRequest
 	OnPreHandler            OnPreHandler
@@ -43,9 +43,9 @@ func NewAPIHTTP() *APIHTTP {
 		OnPreAuth:               handlerDefault(),
 		ValidateAuth:            handlerDefault(),
 		OnPostAuth:              handlerDefault(),
-		ValidateHeaders:         handlerDefault(),
-		ValidateParams:          handlerDefault(),
-		ValidateQuery:           handlerDefault(),
+		ValidateHeader:          handlerDefault(),
+		ValidateParam:           handlerValidateParam(),
+		ValidateQuery:           handlerValidateQuery(),
 		ParseRequest:            handlerParseRequestDefault(),
 		ValidateRequest:         handlerValidateRequestDefault(),
 		OnPreHandler:            handlerOnPreHandlerDefault(),
@@ -67,17 +67,23 @@ type HandlerByPass = func(service interface{}, serviceOptionList map[string]inte
 // HandlerCycle Type
 type HandlerCycle = func(context InterfaceContext) (err *Error)
 
+// ValidateParam Type
+type ValidateParam = func(context InterfaceContext) (requestValidatedParam interface{}, err *Error)
+
+// ValidateQuery Type
+type ValidateQuery = func(context InterfaceContext) (requestValidatedQuery interface{}, err *Error)
+
 // ParseRequest Type
-type ParseRequest = func(context InterfaceContext) (requestMapping interface{}, err *Error)
+type ParseRequest = func(context InterfaceContext) (requestMappingBody interface{}, err *Error)
 
 // ValidateRequest Type
-type ValidateRequest = func(context InterfaceContext, requestMapping interface{}) (requestValidated interface{}, err *Error)
+type ValidateRequest = func(context InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *Error)
 
 // OnPreHandler Type
-type OnPreHandler = func(context InterfaceContext, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error)
+type OnPreHandler = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, err *Error)
 
 // HandlerLogic Type
-type HandlerLogic = func(context InterfaceContext, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error)
+type HandlerLogic = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error)
 
 // OnPostHandler Type
 type OnPostHandler = func(context InterfaceContext, code int, responseRawIn interface{}, responsePagination *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error)
@@ -100,6 +106,17 @@ type SendResponse = func(context InterfaceContext, code int, requestValidated in
 func handlerDefault() HandlerCycle {
 	return func(context InterfaceContext) (err *Error) {
 		return nil
+	}
+}
+
+func handlerValidateParam() ValidateParam {
+	return func(context InterfaceContext) (requestValidatedParam interface{}, err *Error) {
+		return nil, nil
+	}
+}
+func handlerValidateQuery() ValidateQuery {
+	return func(context InterfaceContext) (requestValidatedQuery interface{}, err *Error) {
+		return nil, nil
 	}
 }
 
@@ -130,13 +147,13 @@ func handlerValidateRequestDefault() ValidateRequest {
 }
 
 func handlerOnPreHandlerDefault() OnPreHandler {
-	return func(context InterfaceContext, requestValidatedIn interface{}) (requestValidatedOut interface{}, err *Error) {
-		return requestValidatedIn, nil
+	return func(context InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, err *Error) {
+		return requestValidatedBody, requestValidatedParam, requestValidatedQuery, nil
 	}
 }
 
 func handlerHandlerLogicDefault() HandlerLogic {
-	return func(context InterfaceContext, requestValidated interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error) {
+	return func(context InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error) {
 		return 200, nil, nil, nil
 	}
 }
@@ -240,39 +257,39 @@ func (api *APIHTTP) handlerLifeCycle() Handler {
 
 		// ================== Validate Request =======================
 
-		err = api.api.ValidateHeaders(context)
+		err = api.api.ValidateHeader(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.api.ValidateParams(context)
+		requestValidatedParam, err := api.api.ValidateParam(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.api.ValidateQuery(context)
+		requestValidatedQuery, err := api.api.ValidateQuery(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestMapping, err := api.api.ParseRequest(context)
+		requestMappingBody, err := api.api.ParseRequest(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestValidated, err := api.api.ValidateRequest(context, requestMapping)
+		requestValidatedBody, err := api.api.ValidateRequest(context, requestMappingBody)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
 		// ================== Handler =======================
 
-		requestValidated, err = api.api.OnPreHandler(context, requestValidated)
+		requestValidatedBody, requestValidatedParam, requestValidatedQuery, err = api.api.OnPreHandler(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseRaw, responsePagination, err := api.api.HandlerLogic(context, requestValidated)
+		code, responseRaw, responsePagination, err := api.api.HandlerLogic(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
@@ -335,18 +352,18 @@ func (api *APIHTTP) ValidateAuth(handler HandlerCycle) {
 	api.api.ValidateAuth = handler
 }
 
-// ValidateHeaders func
-func (api *APIHTTP) ValidateHeaders(handler HandlerCycle) {
-	api.api.ValidateHeaders = handler
+// ValidateHeader func
+func (api *APIHTTP) ValidateHeader(handler HandlerCycle) {
+	api.api.ValidateHeader = handler
 }
 
-// ValidateParams func
-func (api *APIHTTP) ValidateParams(handler HandlerCycle) {
-	api.api.ValidateParams = handler
+// ValidateParam func
+func (api *APIHTTP) ValidateParam(handler ValidateParam) {
+	api.api.ValidateParam = handler
 }
 
 // ValidateQuery func
-func (api *APIHTTP) ValidateQuery(handler HandlerCycle) {
+func (api *APIHTTP) ValidateQuery(handler ValidateQuery) {
 	api.api.ValidateQuery = handler
 }
 
@@ -422,18 +439,18 @@ func (api *APIHTTP) GetOnPostAuth() HandlerCycle {
 	return api.api.OnPostAuth
 }
 
-// GetValidateHeaders func
-func (api *APIHTTP) GetValidateHeaders() HandlerCycle {
-	return api.api.ValidateHeaders
+// GetValidateHeader func
+func (api *APIHTTP) GetValidateHeader() HandlerCycle {
+	return api.api.ValidateHeader
 }
 
-// GetValidateParams func
-func (api *APIHTTP) GetValidateParams() HandlerCycle {
-	return api.api.ValidateParams
+// GetValidateParam func
+func (api *APIHTTP) GetValidateParam() ValidateParam {
+	return api.api.ValidateParam
 }
 
 // GetValidateQuery func
-func (api *APIHTTP) GetValidateQuery() HandlerCycle {
+func (api *APIHTTP) GetValidateQuery() ValidateQuery {
 	return api.api.ValidateQuery
 }
 
