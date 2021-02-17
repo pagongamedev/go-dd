@@ -4,13 +4,15 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/gofiber/fiber/v2"
 	godd "github.com/pagongamedev/go-dd"
+	goddMicroService "github.com/pagongamedev/go-dd/microservice"
+
 	"golang.org/x/text/language"
 )
 
-var ms *godd.MicroService
+var ms *goddMicroService.MicroService
 
 // Router Func
-func Router(app *fiber.App, path string) *godd.MicroService {
+func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 
 	i18n := godd.NewI18N(language.English, "toml", toml.Unmarshal,
 		godd.Map{
@@ -18,7 +20,7 @@ func Router(app *fiber.App, path string) *godd.MicroService {
 			"th": "example/demo1/domain/demo/i18n/demo.th.toml",
 		})
 
-	ms = godd.NewMicroService(app, path, nil, nil, i18n)
+	ms = goddMicroService.New(app, path, nil, nil, i18n)
 	ms.Get("/hello", HandlerHello())
 
 	// repo := godd.EnvironmentSwitcher("localhost", 0, 0, 1, 1, 2, "A", "B", "C", "D")

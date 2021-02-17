@@ -1,31 +1,34 @@
-package godd
+package portal
 
 import (
 	"log"
 	"time"
+
+	godd "github.com/pagongamedev/go-dd"
+	"github.com/pagongamedev/go-dd/framework"
 )
 
 // Portal Struct
 type Portal struct {
 	appList    []appServe
-	iCloseList []InterfaceClose
+	iCloseList []godd.InterfaceClose
 	// router fiber.Router
 }
 
-type appServe struct {
-	app  InterfaceApp
-	port string
-}
-
-// NewPortal Func
-func NewPortal() *Portal {
+// New Func
+func New() *Portal {
 	return &Portal{}
 }
 
-// AppendApp Func
-func (pt *Portal) AppendApp(app interface{}, port string, framework ...FrameWork) {
+type appServe struct {
+	app  godd.InterfaceApp
+	port string
+}
 
-	interfaceApp := AdapterApp(app, framework...)
+// AppendApp Func
+func (pt *Portal) AppendApp(app interface{}, port string, fw ...godd.FrameWork) {
+
+	interfaceApp := framework.AdapterApp(app, fw...)
 	addAPIGetHealth(interfaceApp)
 
 	pt.appList = append(pt.appList, appServe{
@@ -49,7 +52,7 @@ func startAppGoroutine(app appServe, errc chan error) {
 }
 
 func shutdownAppGoroutine(app appServe) {
-	MustError(app.app.Shutdown())
+	godd.MustError(app.app.Shutdown())
 }
 
 func waitAppAppGoroutine(errc chan error, waitTimeForError int64) {
@@ -93,12 +96,25 @@ func (pt *Portal) StartServer() {
 // AppendInterfaceClose Func
 func (pt *Portal) AppendInterfaceClose(iList ...interface{}) {
 	for _, i := range iList {
-		pt.iCloseList = append(pt.iCloseList, i.(InterfaceClose))
+		pt.iCloseList = append(pt.iCloseList, i.(godd.InterfaceClose))
 	}
 }
 
 func (pt *Portal) deferInterfaceClose() {
 	for _, iClose := range pt.iCloseList {
 		iClose.Close()
+	}
+}
+
+//=====================================
+
+// addAPIGetHealth Func
+func addAPIGetHealth(app godd.InterfaceApp) {
+	app.Get("/health", handlerHealth())
+}
+
+func handlerHealth() godd.Handler {
+	return func(ctx godd.InterfaceContext) error {
+		return ctx.Response(godd.Map{"success": true})
 	}
 }

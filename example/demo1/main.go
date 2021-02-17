@@ -2,18 +2,19 @@ package main
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
-	godd "github.com/pagongamedev/go-dd"
 	_ "github.com/pagongamedev/go-dd/example/demo1/docs"
 	"github.com/pagongamedev/go-dd/example/demo1/domain/demo"
+	goddPortal "github.com/pagongamedev/go-dd/portal"
+	goddGofiber "github.com/pagongamedev/go-dd/support/gofiber"
 )
 
 func main() {
-	portal := godd.NewPortal()
+	portal := goddPortal.New()
 	appMain := appMain()
 
 	portal.AppendApp(appMain, ":8083")
-	portal.AppendApp(godd.AppGofiberAPIDocument(), ":8081")
-	portal.AppendApp(godd.AppGofiberMetricsPrometheus(appMain), ":8082")
+	portal.AppendApp(goddGofiber.AppAPIDocument(), ":8081")
+	portal.AppendApp(goddGofiber.AppMetricsPrometheus(appMain), ":8082")
 
 	portal.StartServer()
 }

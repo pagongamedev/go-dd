@@ -26,17 +26,6 @@ func MustError(err error, strList ...string) {
 	}
 }
 
-// AddAPIGetHealth Func
-func addAPIGetHealth(app InterfaceApp) {
-	app.Get("/health", handlerHealth())
-}
-
-func handlerHealth() Handler {
-	return func(ctx InterfaceContext) error {
-		return ctx.Response(Map{"success": true})
-	}
-}
-
 // =========================================
 
 // ValidateStruct func

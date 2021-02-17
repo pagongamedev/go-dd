@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	godd "github.com/pagongamedev/go-dd"
+	goddAPI "github.com/pagongamedev/go-dd/api"
 )
 
 // Job struct
@@ -21,8 +22,8 @@ type User struct {
 }
 
 // HandlerHello API
-func HandlerHello() *godd.APIHTTP {
-	api := godd.NewAPIHTTP()
+func HandlerHello() *goddAPI.HTTP {
+	api := goddAPI.NewAPIHTTP()
 
 	api.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
 		user := new(User)

@@ -36,7 +36,7 @@ type InterfaceContext interface {
 	Response(responseDataList interface{}, responseCode ...int) error
 	Redirect(location string, responseCode ...int) error
 
-	SetContext(api *APIHTTP, state map[string]interface{})
+	SetContext(service interface{}, serviceOptionList map[string]interface{}, i18n *I18N, state map[string]interface{})
 	GetService() interface{}
 	GetServiceOptionList(name string) interface{}
 	GetState(name string) interface{}
