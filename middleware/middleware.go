@@ -7,6 +7,6 @@ import (
 // Middleware struct
 type Middleware struct {
 	LifeCycle        *godd.APILifeCycle
-	handlerStartList []godd.Handler
-	handlerEndList   []godd.Handler
+	HandlerStartList []godd.HandlerCycle
+	HandlerEndList   []godd.HandlerCycle
 }

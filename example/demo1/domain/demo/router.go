@@ -23,20 +23,46 @@ func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 		})
 
 	ms = goddMicroService.New(app, path, nil, nil, i18n)
-	// ms.Get("/hello", HandlerHello())
 	ms.Get("/hello", HandlerHello())
 
+	msLogin := middlewareLogin(ms)
+	msLogin.Get("/hello2", HandlerHello2())
+
+	return ms
+}
+
+func middlewareLogin(ms *goddMicroService.MicroService) *goddMicroService.MicroService {
 	msLogin := ms.NewOne()
 	msLogin.Override().ValidateAuth(func(context godd.InterfaceContext) (err *godd.Error) {
 		log.Println("Hello")
 		return nil
 	})
+	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("Start : 1")
+	// 	return nil
+	// })
+	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("Start : 2")
+	// 	return nil
+	// })
+	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("Start : 3")
+	// 	return nil
+	// })
 
-	msLogin.Get("/hello2", HandlerHello2())
+	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("End : 1")
+	// 	return nil
+	// })
+	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("End : 2")
+	// 	return nil
+	// })
+	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (err *godd.Error) {
+	// 	log.Println("End : 3")
+	// 	return nil
+	// })
 
-	//msLogin.Get()
-	// repo := godd.EnvironmentSwitcher("localhost", 0, 0, 1, 1, 2, "A", "B", "C", "D")
-	// log.Println("repo", repo)
+	return msLogin
 
-	return ms
 }

@@ -81,3 +81,13 @@ func (ms *MicroService) NewOne() *MicroService {
 func (ms *MicroService) Override() *godd.APILifeCycle {
 	return ms.middleware.LifeCycle
 }
+
+// AppendMiddlewareOnStart func
+func (ms *MicroService) AppendMiddlewareOnStart(handler godd.HandlerCycle) {
+	ms.middleware.HandlerStartList = append(ms.middleware.HandlerStartList, handler)
+}
+
+// AppendMiddlewareOnEnd func
+func (ms *MicroService) AppendMiddlewareOnEnd(handler godd.HandlerCycle) {
+	ms.middleware.HandlerEndList = append(ms.middleware.HandlerEndList, handler)
+}

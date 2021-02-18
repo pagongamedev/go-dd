@@ -176,3 +176,21 @@ func EnvironmentSwitcher(env string, Localhost int, Development int, UAT int, St
 
 	return i[index]
 }
+
+// IsInterfaceIsNil func
+func IsInterfaceIsNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+
+	switch reflect.TypeOf(i).Kind() {
+	// case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice, reflect.Func:
+	// 	return reflect.ValueOf(i).IsNil()
+
+	case reflect.Struct:
+		return false
+	}
+
+	return reflect.ValueOf(i).IsNil()
+
+}

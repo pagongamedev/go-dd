@@ -3,7 +3,6 @@ package api
 import (
 	"log"
 	"net/http"
-	"reflect"
 
 	godd "github.com/pagongamedev/go-dd"
 	mdw "github.com/pagongamedev/go-dd/middleware"
@@ -114,7 +113,7 @@ func handlerOnPreResponseDefault() godd.OnPreResponse {
 
 func handlerSendResponseDefault() godd.SendResponse {
 	return func(context godd.InterfaceContext, code int, responseStandard interface{}) (err *godd.Error) {
-		if reflect.ValueOf(responseStandard).IsNil() {
+		if !godd.IsInterfaceIsNil(responseStandard) {
 			context.Response(responseStandard, code)
 		}
 		return nil
@@ -146,10 +145,18 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 	}
 
 	return func(context godd.InterfaceContext) error {
-		// ===============================================
-		context.SetContext(api.service, api.serviceOptionList, api.i18n, map[string]interface{}{})
 		var err *godd.Error
+		context.SetContext(api.service, api.serviceOptionList, api.i18n, map[string]interface{}{})
+		// ================== Mdw =======================
 
+		if api.middleware.HandlerStartList != nil {
+			for _, funcMdw := range api.middleware.HandlerStartList {
+				err = funcMdw(context)
+				if err != nil {
+					return encodeErrorHandler(context, err)
+				}
+			}
+		}
 		// ================== Start =======================
 
 		err = api.LifeCycle.GetOnStart()(context)
@@ -250,6 +257,17 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 			return encodeErrorHandler(context, err)
 		}
 
+		// ================== Mdw =======================
+
+		if api.middleware.HandlerEndList != nil {
+			for _, funcMdw := range api.middleware.HandlerEndList {
+				err = funcMdw(context)
+				if err != nil {
+					return encodeErrorHandler(context, err)
+				}
+			}
+		}
+		// ================== Start =======================
 		return nil
 	}
 }
@@ -314,22 +332,22 @@ func (api *HTTP) middlewareLifeCycleChecker() {
 
 func handlerlifeCycleChecker(name string, api interface{}, mdw interface{}, setDefault interface{}) interface{} {
 
-	if !reflect.ValueOf(mdw).IsNil() && !reflect.ValueOf(api).IsNil() {
+	if !godd.IsInterfaceIsNil(mdw) && !godd.IsInterfaceIsNil(api) {
 		log.Println(name + " : Exist in Middleware and API. Finally Override by Middleware")
 	}
 
-	if !reflect.ValueOf(mdw).IsNil() {
-		log.Println(name + " : SetMiddleware")
+	if !godd.IsInterfaceIsNil(mdw) {
+		// log.Println(name + " : SetMiddleware")
 		return mdw
 
 	}
 
-	if !reflect.ValueOf(api).IsNil() {
-		log.Println(name + " : SetAPI")
+	if !godd.IsInterfaceIsNil(api) {
+		// log.Println(name + " : SetAPI")
 		return api
 	}
 
-	log.Println(name + " : SetDefault")
+	// log.Println(name + " : SetDefault")
 	return setDefault
 }
 
