@@ -72,3 +72,5 @@ type ResponseError struct {
 	Message  string                    `json:"message" swaggertype:"string"`
 	Validate *map[string]ErrorValidate `json:"validate,omitempty" swaggertype:"object"`
 }
+
+// ==============================================================

@@ -1,128 +1,48 @@
 package api
 
 import (
+	"log"
 	"net/http"
+	"reflect"
 
 	godd "github.com/pagongamedev/go-dd"
+	mdw "github.com/pagongamedev/go-dd/middleware"
 )
 
 // HTTP struct
 type HTTP struct {
-	HandlerByPass     HandlerByPass
-	API               *apiLifeCycle
-	Service           interface{}
-	ServiceOptionList map[string]interface{}
-	I18n              *godd.I18N
-}
-
-// apiLifeCycle Struct
-type apiLifeCycle struct {
-	OnStart                 HandlerCycle
-	ParseLanguage           HandlerCycle
-	OnPreAuth               HandlerCycle
-	ValidateAuth            HandlerCycle
-	OnPostAuth              HandlerCycle
-	ValidateHeader          HandlerCycle
-	ValidateParam           ValidateParam
-	ValidateQuery           ValidateQuery
-	ParseRequest            ParseRequest
-	ValidateRequest         ValidateRequest
-	OnPreHandler            OnPreHandler
-	HandlerLogic            HandlerLogic
-	OnPostHandler           OnPostHandler
-	MappingResponse         MappingResponse
-	ValidateResponse        ValidateResponse
-	MappingResponseStandard MappingResponseStandard
-	OnPreResponse           OnPreResponse
-	SendResponse            SendResponse
+	handlerByPass     godd.HandlerByPass
+	LifeCycle         *godd.APILifeCycle
+	service           interface{}
+	serviceOptionList map[string]interface{}
+	i18n              *godd.I18N
+	middleware        *mdw.Middleware
 }
 
 // NewAPIHTTP API
 func NewAPIHTTP() *HTTP {
-	api := apiLifeCycle{
-		OnStart:                 handlerDefault(),
-		ParseLanguage:           handlerParseLanguage(),
-		OnPreAuth:               handlerDefault(),
-		ValidateAuth:            handlerDefault(),
-		OnPostAuth:              handlerDefault(),
-		ValidateHeader:          handlerDefault(),
-		ValidateParam:           handlerValidateParam(),
-		ValidateQuery:           handlerValidateQuery(),
-		ParseRequest:            handlerParseRequestDefault(),
-		ValidateRequest:         handlerValidateRequestDefault(),
-		OnPreHandler:            handlerOnPreHandlerDefault(),
-		HandlerLogic:            handlerHandlerLogicDefault(),
-		OnPostHandler:           handlerOnPostHandlerDefault(),
-		MappingResponse:         handlerMappingResponseDefault(),
-		ValidateResponse:        handlerValidateResponseDefault(),
-		MappingResponseStandard: handlerMappingResponseStandardDefault(),
-		OnPreResponse:           handlerOnPreResponseDefault(),
-		SendResponse:            handlerSendResponseDefault(),
-	}
 
-	return &HTTP{API: &api}
+	return &HTTP{LifeCycle: &godd.APILifeCycle{}}
 }
 
-// HandlerByPass Type
-type HandlerByPass = func(service interface{}, serviceOptionList map[string]interface{}) godd.Handler
-
-// HandlerCycle Type
-type HandlerCycle = func(context godd.InterfaceContext) (err *godd.Error)
-
-// ValidateParam Type
-type ValidateParam = func(context godd.InterfaceContext) (requestValidatedParam interface{}, err *godd.Error)
-
-// ValidateQuery Type
-type ValidateQuery = func(context godd.InterfaceContext) (requestValidatedQuery interface{}, err *godd.Error)
-
-// ParseRequest Type
-type ParseRequest = func(context godd.InterfaceContext) (requestMappingBody interface{}, err *godd.Error)
-
-// ValidateRequest Type
-type ValidateRequest = func(context godd.InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *godd.Error)
-
-// OnPreHandler Type
-type OnPreHandler = func(context godd.InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, err *godd.Error)
-
-// HandlerLogic Type
-type HandlerLogic = func(context godd.InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error)
-
-// OnPostHandler Type
-type OnPostHandler = func(context godd.InterfaceContext, code int, responseRawIn interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error)
-
-// MappingResponse Type
-type MappingResponse = func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error)
-
-// ValidateResponse Type
-type ValidateResponse = func(context godd.InterfaceContext, code int, responseMapping interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error)
-
-// MappingResponseStandard Type
-type MappingResponseStandard = func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, err *godd.Error)
-
-// OnPreResponse Type
-type OnPreResponse = func(context godd.InterfaceContext, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, err *godd.Error)
-
-// SendResponse Type
-type SendResponse = func(context godd.InterfaceContext, code int, requestValidated interface{}) (err *godd.Error)
-
-func handlerDefault() HandlerCycle {
+func handlerDefault() godd.HandlerCycle {
 	return func(context godd.InterfaceContext) (err *godd.Error) {
 		return nil
 	}
 }
 
-func handlerValidateParam() ValidateParam {
+func handlerValidateParam() godd.ValidateParam {
 	return func(context godd.InterfaceContext) (requestValidatedParam interface{}, err *godd.Error) {
 		return nil, nil
 	}
 }
-func handlerValidateQuery() ValidateQuery {
+func handlerValidateQuery() godd.ValidateQuery {
 	return func(context godd.InterfaceContext) (requestValidatedQuery interface{}, err *godd.Error) {
 		return nil, nil
 	}
 }
 
-func handlerParseLanguage() HandlerCycle {
+func handlerParseLanguage() godd.HandlerCycle {
 	return func(context godd.InterfaceContext) (err *godd.Error) {
 
 		acceptLanguage := context.GetHeader("Accept-Language")
@@ -136,49 +56,49 @@ func handlerParseLanguage() HandlerCycle {
 	}
 }
 
-func handlerParseRequestDefault() ParseRequest {
+func handlerParseRequestDefault() godd.ParseRequest {
 	return func(context godd.InterfaceContext) (requestMapping interface{}, err *godd.Error) {
 		return nil, nil
 	}
 }
 
-func handlerValidateRequestDefault() ValidateRequest {
+func handlerValidateRequestDefault() godd.ValidateRequest {
 	return func(context godd.InterfaceContext, requestMapping interface{}) (requestValidated interface{}, err *godd.Error) {
 		return nil, nil
 	}
 }
 
-func handlerOnPreHandlerDefault() OnPreHandler {
+func handlerOnPreHandlerDefault() godd.OnPreHandler {
 	return func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, err *godd.Error) {
 		return requestValidatedBody, requestValidatedParam, requestValidatedQuery, nil
 	}
 }
 
-func handlerHandlerLogicDefault() HandlerLogic {
+func handlerHandlerLogicDefault() godd.HandlerLogic {
 	return func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
 		return 200, nil, nil, nil
 	}
 }
 
-func handlerOnPostHandlerDefault() OnPostHandler {
+func handlerOnPostHandlerDefault() godd.OnPostHandler {
 	return func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePaginationIn *godd.ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error) {
 		return code, responseRaw, responsePaginationIn, nil
 	}
 }
 
-func handlerMappingResponseDefault() MappingResponse {
+func handlerMappingResponseDefault() godd.MappingResponse {
 	return func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error) {
 		return code, responseRaw, responsePagination, nil
 	}
 }
 
-func handlerValidateResponseDefault() ValidateResponse {
+func handlerValidateResponseDefault() godd.ValidateResponse {
 	return func(context godd.InterfaceContext, code int, responseMapping interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *godd.ResponsePagination, err *godd.Error) {
 		return code, responseMapping, responsePagination, nil
 	}
 }
 
-func handlerMappingResponseStandardDefault() MappingResponseStandard {
+func handlerMappingResponseStandardDefault() godd.MappingResponseStandard {
 	return func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseStandard interface{}, err *godd.Error) {
 
 		response, err := MappingStandard(code, responseRaw, responsePagination)
@@ -186,15 +106,15 @@ func handlerMappingResponseStandardDefault() MappingResponseStandard {
 	}
 }
 
-func handlerOnPreResponseDefault() OnPreResponse {
+func handlerOnPreResponseDefault() godd.OnPreResponse {
 	return func(context godd.InterfaceContext, code int, responseStandard interface{}) (codeOut int, responseStandardOut interface{}, err *godd.Error) {
 		return code, responseStandard, nil
 	}
 }
 
-func handlerSendResponseDefault() SendResponse {
+func handlerSendResponseDefault() godd.SendResponse {
 	return func(context godd.InterfaceContext, code int, responseStandard interface{}) (err *godd.Error) {
-		if responseStandard != nil {
+		if reflect.ValueOf(responseStandard).IsNil() {
 			context.Response(responseStandard, code)
 		}
 		return nil
@@ -204,127 +124,128 @@ func handlerSendResponseDefault() SendResponse {
 // ================================================================
 
 // SetHandlerByPassLifeCycle API
-func (api *HTTP) SetHandlerByPassLifeCycle(handler HandlerByPass) {
-	api.HandlerByPass = handler
+func (api *HTTP) SetHandlerByPassLifeCycle(handler godd.HandlerByPass) {
+	api.handlerByPass = handler
 }
 
 // SetupHandlerHTTP API
-func (api *HTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N) godd.Handler {
-	api.Service = service
-	api.ServiceOptionList = serviceOptionList
-	api.I18n = i18n
-	return api.HandlerLifeCycle()
+func (api *HTTP) SetupHandlerHTTP(service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N, middleware *mdw.Middleware) {
+	api.service = service
+	api.serviceOptionList = serviceOptionList
+	api.i18n = i18n
+	api.middleware = middleware
+	api.middlewareLifeCycleChecker()
 }
 
 // ================================================================
 
 // HandlerLifeCycle func
 func (api *HTTP) HandlerLifeCycle() godd.Handler {
-	if api.HandlerByPass != nil {
-		return api.HandlerByPass(api.Service, api.ServiceOptionList)
+	if api.handlerByPass != nil {
+		return api.handlerByPass(api.service, api.serviceOptionList)
 	}
 
 	return func(context godd.InterfaceContext) error {
 		// ===============================================
-		context.SetContext(api.Service, api.ServiceOptionList, api.I18n, map[string]interface{}{})
+		context.SetContext(api.service, api.serviceOptionList, api.i18n, map[string]interface{}{})
 		var err *godd.Error
 
 		// ================== Start =======================
 
-		err = api.API.OnStart(context)
+		err = api.LifeCycle.GetOnStart()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.API.ParseLanguage(context)
+		err = api.LifeCycle.GetParseLanguage()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
 		// ================== Auth =======================
 
-		err = api.API.OnPreAuth(context)
+		err = api.LifeCycle.GetOnPreAuth()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.API.ValidateAuth(context)
+		err = api.LifeCycle.GetValidateAuth()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.API.OnPostAuth(context)
+		err = api.LifeCycle.GetOnPostAuth()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
 		// ================== Validate Request =======================
 
-		err = api.API.ValidateHeader(context)
+		err = api.LifeCycle.GetValidateHeader()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestValidatedParam, err := api.API.ValidateParam(context)
+		requestValidatedParam, err := api.LifeCycle.GetValidateParam()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestValidatedQuery, err := api.API.ValidateQuery(context)
+		requestValidatedQuery, err := api.LifeCycle.GetValidateQuery()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestMappingBody, err := api.API.ParseRequest(context)
+		requestMappingBody, err := api.LifeCycle.GetParseRequest()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		requestValidatedBody, err := api.API.ValidateRequest(context, requestMappingBody)
+		requestValidatedBody, err := api.LifeCycle.GetValidateRequest()(context, requestMappingBody)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
 		// ================== Handler =======================
 
-		requestValidatedBody, requestValidatedParam, requestValidatedQuery, err = api.API.OnPreHandler(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
+		requestValidatedBody, requestValidatedParam, requestValidatedQuery, err = api.LifeCycle.GetOnPreHandler()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseRaw, responsePagination, err := api.API.HandlerLogic(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
+		code, responseRaw, responsePagination, err := api.LifeCycle.GetHandlerLogic()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseRaw, responsePagination, err = api.API.OnPostHandler(context, code, responseRaw, responsePagination)
+		code, responseRaw, responsePagination, err = api.LifeCycle.GetOnPostHandler()(context, code, responseRaw, responsePagination)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
 		// ================== Validate Response =======================
 
-		code, responseMapping, responsePagination, err := api.API.MappingResponse(context, code, responseRaw, responsePagination)
+		code, responseMapping, responsePagination, err := api.LifeCycle.GetMappingResponse()(context, code, responseRaw, responsePagination)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseValidated, responsePagination, err := api.API.ValidateResponse(context, code, responseMapping, responsePagination)
+		code, responseValidated, responsePagination, err := api.LifeCycle.GetValidateResponse()(context, code, responseMapping, responsePagination)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseStandard, err := api.API.MappingResponseStandard(context, code, responseValidated, responsePagination)
+		code, responseStandard, err := api.LifeCycle.GetMappingResponseStandard()(context, code, responseValidated, responsePagination)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		code, responseStandard, err = api.API.OnPreResponse(context, code, responseStandard)
+		code, responseStandard, err = api.LifeCycle.GetOnPreResponse()(context, code, responseStandard)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.API.SendResponse(context, code, responseStandard)
+		err = api.LifeCycle.GetSendResponse()(context, code, responseStandard)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
@@ -333,178 +254,83 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 	}
 }
 
-//========================================
+func (api *HTTP) middlewareLifeCycleChecker() {
+	var i interface{}
 
-// OnStart func
-func (api *HTTP) OnStart(handler HandlerCycle) {
-	api.API.OnStart = handler
+	i = handlerlifeCycleChecker("Onstart", api.LifeCycle.GetOnStart(), api.middleware.LifeCycle.GetOnStart(), handlerDefault())
+	api.LifeCycle.OnStart(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("ParseLanguage", api.LifeCycle.GetParseLanguage(), api.middleware.LifeCycle.GetParseLanguage(), handlerParseLanguage())
+	api.LifeCycle.ParseLanguage(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("OnPreAuth", api.LifeCycle.GetOnPreAuth(), api.middleware.LifeCycle.GetOnPreAuth(), handlerDefault())
+	api.LifeCycle.OnPreAuth(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("ValidateAuth", api.LifeCycle.GetValidateAuth(), api.middleware.LifeCycle.GetValidateAuth(), handlerDefault())
+	api.LifeCycle.ValidateAuth(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("OnPostAuth", api.LifeCycle.GetOnPostAuth(), api.middleware.LifeCycle.GetOnPostAuth(), handlerDefault())
+	api.LifeCycle.OnPostAuth(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("ValidateHeader", api.LifeCycle.GetValidateHeader(), api.middleware.LifeCycle.GetValidateHeader(), handlerDefault())
+	api.LifeCycle.ValidateHeader(i.(godd.HandlerCycle))
+
+	i = handlerlifeCycleChecker("ValidateParam", api.LifeCycle.GetValidateParam(), api.middleware.LifeCycle.GetValidateParam(), handlerValidateParam())
+	api.LifeCycle.ValidateParam(i.(godd.ValidateParam))
+
+	i = handlerlifeCycleChecker("ValidateQuery", api.LifeCycle.GetValidateQuery(), api.middleware.LifeCycle.GetValidateQuery(), handlerValidateQuery())
+	api.LifeCycle.ValidateQuery(i.(godd.ValidateQuery))
+
+	i = handlerlifeCycleChecker("ParseRequest", api.LifeCycle.GetParseRequest(), api.middleware.LifeCycle.GetParseRequest(), handlerParseRequestDefault())
+	api.LifeCycle.ParseRequest(i.(godd.ParseRequest))
+
+	i = handlerlifeCycleChecker("ValidateRequest", api.LifeCycle.GetValidateRequest(), api.middleware.LifeCycle.GetValidateRequest(), handlerValidateRequestDefault())
+	api.LifeCycle.ValidateRequest(i.(godd.ValidateRequest))
+
+	i = handlerlifeCycleChecker("OnPreHandler", api.LifeCycle.GetOnPreHandler(), api.middleware.LifeCycle.GetOnPreHandler(), handlerOnPreHandlerDefault())
+	api.LifeCycle.OnPreHandler(i.(godd.OnPreHandler))
+
+	i = handlerlifeCycleChecker("HandlerLogic", api.LifeCycle.GetHandlerLogic(), api.middleware.LifeCycle.GetHandlerLogic(), handlerHandlerLogicDefault())
+	api.LifeCycle.HandlerLogic(i.(godd.HandlerLogic))
+
+	i = handlerlifeCycleChecker("OnPostHandler", api.LifeCycle.GetOnPostHandler(), api.middleware.LifeCycle.GetOnPostHandler(), handlerOnPostHandlerDefault())
+	api.LifeCycle.OnPostHandler(i.(godd.OnPostHandler))
+
+	i = handlerlifeCycleChecker("MappingResponse", api.LifeCycle.GetMappingResponse(), api.middleware.LifeCycle.GetMappingResponse(), handlerMappingResponseDefault())
+	api.LifeCycle.MappingResponse(i.(godd.MappingResponse))
+
+	i = handlerlifeCycleChecker("ValidateResponse", api.LifeCycle.GetValidateResponse(), api.middleware.LifeCycle.GetValidateResponse(), handlerValidateResponseDefault())
+	api.LifeCycle.ValidateResponse(i.(godd.ValidateResponse))
+
+	i = handlerlifeCycleChecker("MappingResponseStandard", api.LifeCycle.GetMappingResponseStandard(), api.middleware.LifeCycle.GetMappingResponseStandard(), handlerMappingResponseStandardDefault())
+	api.LifeCycle.MappingResponseStandard(i.(godd.MappingResponseStandard))
+
+	i = handlerlifeCycleChecker("OnPreResponse", api.LifeCycle.GetOnPreResponse(), api.middleware.LifeCycle.GetOnPreResponse(), handlerOnPreResponseDefault())
+	api.LifeCycle.OnPreResponse(i.(godd.OnPreResponse))
+
+	i = handlerlifeCycleChecker("SendResponse", api.LifeCycle.GetSendResponse(), api.middleware.LifeCycle.GetSendResponse(), handlerSendResponseDefault())
+	api.LifeCycle.SendResponse(i.(godd.SendResponse))
 }
 
-// ParseLanguage func
-func (api *HTTP) ParseLanguage(handler HandlerCycle) {
-	api.API.ParseLanguage = handler
-}
+func handlerlifeCycleChecker(name string, api interface{}, mdw interface{}, setDefault interface{}) interface{} {
 
-// OnPreAuth func
-func (api *HTTP) OnPreAuth(handler HandlerCycle) {
-	api.API.OnPreAuth = handler
-}
+	if !reflect.ValueOf(mdw).IsNil() && !reflect.ValueOf(api).IsNil() {
+		log.Println(name + " : Exist in Middleware and API. Finally Override by Middleware")
+	}
 
-// ValidateAuth func
-func (api *HTTP) ValidateAuth(handler HandlerCycle) {
-	api.API.ValidateAuth = handler
-}
+	if !reflect.ValueOf(mdw).IsNil() {
+		log.Println(name + " : SetMiddleware")
+		return mdw
 
-// ValidateHeader func
-func (api *HTTP) ValidateHeader(handler HandlerCycle) {
-	api.API.ValidateHeader = handler
-}
+	}
 
-// ValidateParam func
-func (api *HTTP) ValidateParam(handler ValidateParam) {
-	api.API.ValidateParam = handler
-}
+	if !reflect.ValueOf(api).IsNil() {
+		log.Println(name + " : SetAPI")
+		return api
+	}
 
-// ValidateQuery func
-func (api *HTTP) ValidateQuery(handler ValidateQuery) {
-	api.API.ValidateQuery = handler
-}
-
-// ParseRequest func
-func (api *HTTP) ParseRequest(handler ParseRequest) {
-	api.API.ParseRequest = handler
-}
-
-// ValidateRequest func
-func (api *HTTP) ValidateRequest(handler ValidateRequest) {
-	api.API.ValidateRequest = handler
-}
-
-// OnPreHandler func
-func (api *HTTP) OnPreHandler(handler OnPreHandler) {
-	api.API.OnPreHandler = handler
-}
-
-// HandlerLogic func
-func (api *HTTP) HandlerLogic(handler HandlerLogic) {
-	api.API.HandlerLogic = handler
-}
-
-// OnPostHandler func
-func (api *HTTP) OnPostHandler(handler OnPostHandler) {
-	api.API.OnPostHandler = handler
-}
-
-// MappingResponse func
-func (api *HTTP) MappingResponse(handler MappingResponse) {
-	api.API.MappingResponse = handler
-}
-
-// ValidateResponse func
-func (api *HTTP) ValidateResponse(handler ValidateResponse) {
-	api.API.ValidateResponse = handler
-}
-
-// OnPreResponse func
-func (api *HTTP) OnPreResponse(handler OnPreResponse) {
-	api.API.OnPreResponse = handler
-}
-
-// SendResponse func
-func (api *HTTP) SendResponse(handler SendResponse) {
-	api.API.SendResponse = handler
-}
-
-//========================================
-
-// GetOnStart func
-func (api *HTTP) GetOnStart() HandlerCycle {
-	return api.API.OnStart
-}
-
-// GetParseLanguage func
-func (api *HTTP) GetParseLanguage() HandlerCycle {
-	return api.API.ParseLanguage
-}
-
-// GetOnPreAuth func
-func (api *HTTP) GetOnPreAuth() HandlerCycle {
-	return api.API.OnPreAuth
-}
-
-// GetValidateAuth func
-func (api *HTTP) GetValidateAuth() HandlerCycle {
-	return api.API.ValidateAuth
-}
-
-// GetOnPostAuth func
-func (api *HTTP) GetOnPostAuth() HandlerCycle {
-	return api.API.OnPostAuth
-}
-
-// GetValidateHeader func
-func (api *HTTP) GetValidateHeader() HandlerCycle {
-	return api.API.ValidateHeader
-}
-
-// GetValidateParam func
-func (api *HTTP) GetValidateParam() ValidateParam {
-	return api.API.ValidateParam
-}
-
-// GetValidateQuery func
-func (api *HTTP) GetValidateQuery() ValidateQuery {
-	return api.API.ValidateQuery
-}
-
-// GetParseRequest func
-func (api *HTTP) GetParseRequest() ParseRequest {
-	return api.API.ParseRequest
-}
-
-// GetValidateRequest func
-func (api *HTTP) GetValidateRequest() ValidateRequest {
-	return api.API.ValidateRequest
-}
-
-// GetOnPreHandler func
-func (api *HTTP) GetOnPreHandler() OnPreHandler {
-	return api.API.OnPreHandler
-}
-
-// GetHandlerLogic func
-func (api *HTTP) GetHandlerLogic() HandlerLogic {
-	return api.API.HandlerLogic
-}
-
-// GetOnPostHandler func
-func (api *HTTP) GetOnPostHandler() OnPostHandler {
-	return api.API.OnPostHandler
-}
-
-// GetMappingResponse func
-func (api *HTTP) GetMappingResponse() MappingResponse {
-	return api.API.MappingResponse
-}
-
-// GetValidateResponse func
-func (api *HTTP) GetValidateResponse() ValidateResponse {
-	return api.API.ValidateResponse
-}
-
-// GetMappingResponseStandard func
-func (api *HTTP) GetMappingResponseStandard() MappingResponseStandard {
-	return api.API.MappingResponseStandard
-}
-
-// GetOnPreResponse func
-func (api *HTTP) GetOnPreResponse() OnPreResponse {
-	return api.API.OnPreResponse
-}
-
-// GetSendResponse func
-func (api *HTTP) GetSendResponse() SendResponse {
-	return api.API.SendResponse
+	log.Println(name + " : SetDefault")
+	return setDefault
 }
 
 //========================================

@@ -1,6 +1,8 @@
 package demo
 
 import (
+	"log"
+
 	"github.com/BurntSushi/toml"
 	"github.com/gofiber/fiber/v2"
 	godd "github.com/pagongamedev/go-dd"
@@ -21,8 +23,18 @@ func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 		})
 
 	ms = goddMicroService.New(app, path, nil, nil, i18n)
+	// ms.Get("/hello", HandlerHello())
 	ms.Get("/hello", HandlerHello())
 
+	msLogin := ms.NewOne()
+	msLogin.Override().ValidateAuth(func(context godd.InterfaceContext) (err *godd.Error) {
+		log.Println("Hello")
+		return nil
+	})
+
+	msLogin.Get("/hello2", HandlerHello2())
+
+	//msLogin.Get()
 	// repo := godd.EnvironmentSwitcher("localhost", 0, 0, 1, 1, 2, "A", "B", "C", "D")
 	// log.Println("repo", repo)
 
