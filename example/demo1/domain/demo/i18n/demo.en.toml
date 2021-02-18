@@ -1,0 +1,21 @@
+# active.en.toml
+[PersonCats]
+description = "The number of cats a person has"
+one = "{{.Name}} has {{.Count}} cat."
+other = "{{.Name}} has {{.Count}} cats."
+
+[validate_required]
+description = "validate empty"
+other = "\"{{.Field}}\" is empty please refill"
+
+[validate_email]
+description = "validate email"
+other = "\"{{.Field}}\" please fill valid email type"
+
+[validate_min]
+description = "validate min"
+other = "\"{{.Field}}\" minimium is {{.Param}} characters"
+
+[validate_max]
+description = "validate max"
+other = "\"{{.Field}}\" maximium {{.Param}} characters"

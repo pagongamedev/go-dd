@@ -5,7 +5,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
+	"gopkg.in/mcuadros/go-defaults.v1"
 )
 
 // =====================================================================
@@ -23,27 +26,16 @@ func MustError(err error, strList ...string) {
 	}
 }
 
-// AddAPIGetHealth Func
-func addAPIGetHealth(app InterfaceApp) {
-	app.Get("/health", handlerHealth())
-}
-
-func handlerHealth() Handler {
-	return func(ctx InterfaceContext) error {
-		return ctx.Response(Map{"success": true})
-	}
-}
-
 // =========================================
 
 // ValidateStruct func
-func ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
-	var errValidateList *map[string]ErrorValidate
+func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]interface{}) *Error {
+	var errList *map[string]ErrorValidate
 	validate := validator.New()
 	err := validate.Struct(i)
 
 	if err != nil {
-		errValidateList = &map[string]ErrorValidate{}
+		errList = &map[string]ErrorValidate{}
 		for _, err := range err.(validator.ValidationErrors) {
 
 			ss := strings.Split(err.Namespace(), ".")
@@ -52,23 +44,18 @@ func ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
 				length = 0
 			}
 			fieldName := getNameField(iType[ss[length]], err.Field())
-			v := (*errValidateList)[fieldName]
-
-			if v.ReasonList == nil {
-				v.ReasonList = map[string]ErrorValidateReason{}
-			}
-			v.ReasonList[err.Tag()] = ErrorValidateReason{
-				Message: "",
+			(*errList)[fieldName] = ErrorValidate{
+				Reason:  err.Tag(),
 				Param:   err.Param(),
+				Message: context.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
 			}
 
-			(*errValidateList)[fieldName] = v
 		}
 	}
 
-	if errValidateList != nil {
+	if errList != nil {
 		return &Error{
-			ErrorValidate: errValidateList,
+			ErrorValidate: errList,
 		}
 	}
 	return nil
@@ -88,3 +75,122 @@ func getNameField(i interface{}, str string) string {
 }
 
 // =========================================
+
+// SetDefaultStruct func
+func SetDefaultStruct(variable interface{}) interface{} {
+	defaults.SetDefaults(variable) //<-- This set the defaults values
+	return variable
+}
+
+// =========================================
+
+// I18N func
+type I18N struct {
+	bundle        *i18n.Bundle
+	localizerList map[string]*i18n.Localizer
+}
+
+// NewI18N func
+func NewI18N(defaultLanguage language.Tag, formatUnmarshal string, unmarshalFunc i18n.UnmarshalFunc, fileLanguageList Map) *I18N {
+	bundle := i18n.NewBundle(defaultLanguage)
+	bundle.RegisterUnmarshalFunc(formatUnmarshal, unmarshalFunc)
+
+	localizerList := map[string]*i18n.Localizer{}
+
+	for key, fileLanguage := range fileLanguageList {
+		var k string
+		keyList := strings.Split(key, "-")
+		k = key
+		if len(keyList) > 0 {
+			k = keyList[0]
+		}
+		bundle.LoadMessageFile(fileLanguage.(string))
+		localizerList[k] = i18n.NewLocalizer(bundle, key)
+	}
+
+	return &I18N{
+		bundle:        bundle,
+		localizerList: localizerList,
+	}
+}
+
+//MustLocalize func
+func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...interface{}) string {
+	var iMessage *i18n.Message
+	if len(m) > 0 {
+		iMessage = m[0].(*i18n.Message)
+	} else {
+		iMessage = &i18n.Message{
+			ID: id,
+		}
+	}
+	l := lang
+	langList := strings.Split(lang, ",")
+	if len(langList) > 0 {
+		l = langList[0]
+		langList = strings.Split(l, "-")
+		if len(langList) > 0 {
+			l = langList[0]
+		}
+	}
+
+	localizer := (i.localizerList[l])
+	if localizer != nil {
+		return localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				DefaultMessage: iMessage,
+				TemplateData:   data,
+				PluralCount:    count,
+			})
+	}
+	return ""
+}
+
+//====================
+
+// EnvironmentSwitcher func
+func EnvironmentSwitcher(env string, Localhost int, Development int, UAT int, Staging int, Production int, i ...interface{}) interface{} {
+	var index int
+	switch env {
+	case "localhost":
+		index = Localhost
+		break
+	case "development":
+		index = Development
+		break
+	case "uat":
+		index = UAT
+		break
+	case "staging":
+		index = Staging
+		break
+	case "production":
+		index = Production
+		break
+	}
+
+	if index < 0 || index > len(i)-1 {
+		log.Println("Out of Length")
+		return nil
+	}
+
+	return i[index]
+}
+
+// IsInterfaceIsNil func
+func IsInterfaceIsNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+
+	switch reflect.TypeOf(i).Kind() {
+	// case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice, reflect.Func:
+	// 	return reflect.ValueOf(i).IsNil()
+
+	case reflect.Struct:
+		return false
+	}
+
+	return reflect.ValueOf(i).IsNil()
+
+}

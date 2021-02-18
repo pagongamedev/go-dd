@@ -8,29 +8,14 @@ import (
 	goddAPI "github.com/pagongamedev/go-dd/api"
 )
 
-// Job struct
-type Job struct {
-	Type   string `json:"type"   default:"none" validate:"required,min=3,max=32"`
-	Salary int    `json:"salary" default:"200"  validate:"required,number"`
-}
-
-//User struct
-type User struct {
-	Name     string `json:"name"      default:"john" validate:"required,min=3,max=32"`
-	IsActive bool   `json:"is_active" default:"true" validate:"required,eq=True|eq=False"`
-	Email    string `json:"email"                    validate:"required,email,min=6,max=32"`
-	Job      Job    `json:"job"                      validate:"dive"`
-}
-
-// HandlerHello API
-func HandlerHello() *goddAPI.HTTP {
+// HandlerHello2 API
+func HandlerHello2() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
 	api.LifeCycle.ValidateAuth(func(context godd.InterfaceContext) (err *godd.Error) {
 		log.Println("API")
 		return nil
 	})
-
 	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
 		user := new(User)
 

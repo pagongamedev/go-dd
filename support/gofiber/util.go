@@ -1,17 +1,17 @@
-package godd
+package gofiber
 
 import (
 	"net/http"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/pagongamedev/go-dd/middleware"
+	"github.com/pagongamedev/go-dd/support/gofiber/middleware"
 )
 
 //=============== Gofiber ======================
 
-// AppGofiberAPIDocument Func
-func AppGofiberAPIDocument() *fiber.App {
+// AppAPIDocument Func
+func AppAPIDocument() *fiber.App {
 	app := fiber.New()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/swagger/index.html", http.StatusMovedPermanently)
@@ -20,8 +20,8 @@ func AppGofiberAPIDocument() *fiber.App {
 	return app
 }
 
-// AppGofiberMetricsPrometheus Func
-func AppGofiberMetricsPrometheus(mainApp *fiber.App) *fiber.App {
+// AppMetricsPrometheus Func
+func AppMetricsPrometheus(mainApp *fiber.App) *fiber.App {
 	app := fiber.New()
 	mdwPrometheus := middleware.NewPrometheus("fiber", "http")
 	mdwPrometheus.Register(mainApp)

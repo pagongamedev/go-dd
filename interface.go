@@ -36,7 +36,7 @@ type InterfaceContext interface {
 	Response(responseDataList interface{}, responseCode ...int) error
 	Redirect(location string, responseCode ...int) error
 
-	SetContext(api *APIHTTP, state map[string]interface{})
+	SetContext(service interface{}, serviceOptionList map[string]interface{}, i18n *I18N, state map[string]interface{})
 	GetService() interface{}
 	GetServiceOptionList(name string) interface{}
 	GetState(name string) interface{}
@@ -61,6 +61,17 @@ type InterfaceContext interface {
 	ClearCookie(key ...string)
 
 	Log(v ...interface{})
+
+	// ========== i18n
+
+	SetLang(lang string)
+	GetLang() string
+	MustLocalize(id string, data Map, count int, m ...interface{}) string
+
+	// ====== Validate Struct
+
+	ValidateStruct(i interface{}, iType map[string]interface{}) *Error
+	SetDefaultStruct(i interface{}) interface{}
 }
 
 // Get(path string, handlers ...Handler) Router

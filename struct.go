@@ -25,24 +25,28 @@ type Error struct {
 
 // ErrorValidate struct
 type ErrorValidate struct {
-	ReasonList map[string]ErrorValidateReason `json:"reasons"`
+	Reason  string `json:"reason"`
+	Message string `json:"message"`
+	Param   string `json:"param,omitempty"`
 }
 
 // ErrorValidateReason struct
 type ErrorValidateReason struct {
-	Message string `json:"message"`
-	Param   string `json:"param,omitempty"`
 }
 
 // ==============================================================
 
 // RequestPagination Struct
 type RequestPagination struct {
-	Page     int `json:"page"      swaggertype:"integer"`
-	PageSize int `json:"page_size" swaggertype:"integer"`
+	Page     int `json:"page"      default:"1"  swaggertype:"integer"`
+	PageSize int `json:"page_size" default:"10" swaggertype:"integer"`
 	// DateStart string `json:"date_start"`
 	// DateEnd   string `json:"date_end"`
 	// SortType  string `json:"sort_type"`
+}
+
+// RequestFilter Struct
+type RequestFilter struct {
 }
 
 // ResponseDataList for Send Response Message to Encode Response
@@ -68,3 +72,5 @@ type ResponseError struct {
 	Message  string                    `json:"message" swaggertype:"string"`
 	Validate *map[string]ErrorValidate `json:"validate,omitempty" swaggertype:"object"`
 }
+
+// ==============================================================
