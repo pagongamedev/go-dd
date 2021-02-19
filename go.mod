@@ -9,9 +9,9 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
+	github.com/pagongamedev/temp-go-defaults v0.0.0-20210219102045-1d79e41898d7 // indirect
 	github.com/prometheus/client_golang v1.9.0
 	github.com/swaggo/swag v1.7.0
 	github.com/valyala/fasthttp v1.20.0
 	golang.org/x/text v0.3.4
-	gopkg.in/mcuadros/go-defaults.v1 v1.1.0
 )

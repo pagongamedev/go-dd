@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	defaults "github.com/pagongamedev/temp-go-defaults"
 	"golang.org/x/text/language"
-	"gopkg.in/mcuadros/go-defaults.v1"
 )
 
 // =====================================================================
