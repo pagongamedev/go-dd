@@ -321,6 +321,9 @@ func (context *ContextGofiber) GetLang() string {
 
 // MustLocalize func
 func (context *ContextGofiber) MustLocalize(id string, data godd.Map, count int, m ...interface{}) string {
+	if context.i18n == nil {
+		return ""
+	}
 	return context.i18n.MustLocalize(context.lang, id, data, count, m...)
 }
 
