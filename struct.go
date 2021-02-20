@@ -40,13 +40,27 @@ type ErrorValidateReason struct {
 type RequestPagination struct {
 	Page     int `json:"page"      default:"1"  swaggertype:"integer"`
 	PageSize int `json:"page_size" default:"10" swaggertype:"integer"`
-	// DateStart string `json:"date_start"`
-	// DateEnd   string `json:"date_end"`
-	// SortType  string `json:"sort_type"`
 }
 
 // RequestFilter Struct
 type RequestFilter struct {
+	DateStart  string              `json:"date_start"`
+	DateEnd    string              `json:"date_end"`
+	FilterList []RequestFilterType `json:"filter"`
+	SortList   []RequestSort       `json:"sort"`
+}
+
+// RequestFilterType struct
+type RequestFilterType struct {
+	Field    string `json:"field"`
+	Operator string `json:"op"`
+	Value    string `json:"value"`
+}
+
+// RequestSort struct
+type RequestSort struct {
+	Field string `json:"field"`
+	By    string `json:"by"`
 }
 
 // ResponseDataList for Send Response Message to Encode Response
