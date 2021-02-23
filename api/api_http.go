@@ -63,7 +63,7 @@ func handlerParseRequestDefault() godd.ParseRequest {
 
 func handlerValidateRequestDefault() godd.ValidateRequest {
 	return func(context godd.InterfaceContext, requestMapping interface{}) (requestValidated interface{}, err *godd.Error) {
-		return nil, nil
+		return requestMapping, nil
 	}
 }
 
