@@ -66,7 +66,7 @@ type InterfaceContext interface {
 
 	SetLang(lang string)
 	GetLang() string
-	MustLocalize(id string, data Map, count int, m ...interface{}) string
+	GetI18N() *I18N
 
 	// ====== Validate Struct
 

@@ -1,4 +1,4 @@
-# active.en.toml
+# active.th.toml
 [PersonCats]
 description = "จำนวนแมวที่คนนั้นมี"
 other = "{{.Name}} มีแมว {{.Count}} ตัว"

@@ -29,7 +29,7 @@ func MustError(err error, strList ...string) {
 // =========================================
 
 // ValidateStruct func
-func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]interface{}) *Error {
+func ValidateStruct(i18n *I18N, i interface{}, iType map[string]interface{}) *Error {
 	var errList *map[string]ErrorValidate
 	validate := validator.New()
 	err := validate.Struct(i)
@@ -47,7 +47,7 @@ func ValidateStruct(context InterfaceContext, i interface{}, iType map[string]in
 			(*errList)[fieldName] = ErrorValidate{
 				Reason:  err.Tag(),
 				Param:   err.Param(),
-				Message: context.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
+				Message: i18n.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),
 			}
 
 		}
@@ -88,6 +88,7 @@ func SetDefaultStruct(variable interface{}) interface{} {
 type I18N struct {
 	bundle        *i18n.Bundle
 	localizerList map[string]*i18n.Localizer
+	lang          string
 }
 
 // NewI18N func
@@ -115,7 +116,7 @@ func NewI18N(defaultLanguage language.Tag, formatUnmarshal string, unmarshalFunc
 }
 
 //MustLocalize func
-func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...interface{}) string {
+func (i *I18N) MustLocalize(id string, data Map, count int, m ...interface{}) string {
 	var iMessage *i18n.Message
 	if len(m) > 0 {
 		iMessage = m[0].(*i18n.Message)
@@ -124,8 +125,8 @@ func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...in
 			ID: id,
 		}
 	}
-	l := lang
-	langList := strings.Split(lang, ",")
+	l := i.lang
+	langList := strings.Split(i.lang, ",")
 	if len(langList) > 0 {
 		l = langList[0]
 		langList = strings.Split(l, "-")
@@ -144,6 +145,16 @@ func (i *I18N) MustLocalize(lang string, id string, data Map, count int, m ...in
 			})
 	}
 	return ""
+}
+
+// SetLang func
+func (i *I18N) SetLang(lang string) {
+	i.lang = lang
+}
+
+// GetLang func
+func (i *I18N) GetLang() string {
+	return i.lang
 }
 
 //====================

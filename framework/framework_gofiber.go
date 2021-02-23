@@ -172,7 +172,6 @@ type ContextGofiber struct {
 	State             map[string]interface{}
 	ServiceOptionList map[string]interface{}
 	i18n              *godd.I18N
-	lang              string
 }
 
 // GetFramework func
@@ -311,25 +310,22 @@ func (context *ContextGofiber) Log(v ...interface{}) {
 
 //SetLang func
 func (context *ContextGofiber) SetLang(lang string) {
-	context.lang = lang
+	context.i18n.SetLang(lang)
 }
 
 //GetLang func
 func (context *ContextGofiber) GetLang() string {
-	return context.lang
+	return context.i18n.GetLang()
 }
 
-// MustLocalize func
-func (context *ContextGofiber) MustLocalize(id string, data godd.Map, count int, m ...interface{}) string {
-	if context.i18n == nil {
-		return ""
-	}
-	return context.i18n.MustLocalize(context.lang, id, data, count, m...)
+// GetI18N func
+func (context *ContextGofiber) GetI18N() *godd.I18N {
+	return context.i18n
 }
 
 // ValidateStruct func
 func (context *ContextGofiber) ValidateStruct(i interface{}, iType map[string]interface{}) *godd.Error {
-	return godd.ValidateStruct(context, i, iType)
+	return godd.ValidateStruct(context.i18n, i, iType)
 }
 
 // SetDefaultStruct func
