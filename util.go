@@ -30,12 +30,12 @@ func MustError(err error, strList ...string) {
 
 // ValidateStruct func
 func ValidateStruct(i18n *I18N, i interface{}, iType map[string]interface{}) *Error {
-	var errList *map[string]ErrorValidate
+	var errList *map[string]ResponseErrorValidate
 	validate := validator.New()
 	err := validate.Struct(i)
 
 	if err != nil {
-		errList = &map[string]ErrorValidate{}
+		errList = &map[string]ResponseErrorValidate{}
 		for _, err := range err.(validator.ValidationErrors) {
 
 			ss := strings.Split(err.Namespace(), ".")
@@ -44,7 +44,7 @@ func ValidateStruct(i18n *I18N, i interface{}, iType map[string]interface{}) *Er
 				length = 0
 			}
 			fieldName := getNameField(iType[ss[length]], err.Field())
-			(*errList)[fieldName] = ErrorValidate{
+			(*errList)[fieldName] = ResponseErrorValidate{
 				Reason:  err.Tag(),
 				Param:   err.Param(),
 				Message: i18n.MustLocalize("validate_"+err.Tag(), Map{"Field": fieldName, "Param": err.Param()}, 0),

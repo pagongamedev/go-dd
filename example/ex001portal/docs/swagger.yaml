@@ -1,0 +1,33 @@
+definitions:
+  ex001portal.ResponseDataList:
+    properties:
+      data:
+        type: object
+      error:
+        type: object
+      message:
+        type: string
+      pagination:
+        type: object
+      success:
+        type: boolean
+    type: object
+info:
+  contact: {}
+paths:
+  /hello/v1/hello:
+    get:
+      consumes:
+      - application/json
+      description: Hello Go DD
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ex001portal.ResponseDataList'
+      summary: Hello Go DD
+      tags:
+      - hello
+swagger: "2.0"

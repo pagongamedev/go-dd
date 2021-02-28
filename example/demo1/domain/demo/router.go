@@ -11,8 +11,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-var ms *goddMicroService.MicroService
-
 // Router Func
 func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 
@@ -22,7 +20,7 @@ func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 			"th": "example/demo1/domain/demo/i18n/active.th.toml",
 		})
 
-	ms = goddMicroService.New(app, path, nil, nil, i18n)
+	ms := goddMicroService.New(app, path, nil, nil, i18n)
 	ms.Get("/hello", HandlerHello())
 
 	msLogin := middlewareLogin(ms)

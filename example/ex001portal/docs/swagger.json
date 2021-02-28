@@ -1,0 +1,53 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/hello/v1/hello": {
+            "get": {
+                "description": "Hello Go DD",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hello"
+                ],
+                "summary": "Hello Go DD",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ex001portal.ResponseDataList"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ex001portal.ResponseDataList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "error": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "pagination": {
+                    "type": "object"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

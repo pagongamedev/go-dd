@@ -20,18 +20,7 @@ var (
 type Error struct {
 	Code          int // Please Use http.Status
 	Error         error
-	ErrorValidate *map[string]ErrorValidate
-}
-
-// ErrorValidate struct
-type ErrorValidate struct {
-	Reason  string `json:"reason"`
-	Message string `json:"message"`
-	Param   string `json:"param,omitempty"`
-}
-
-// ErrorValidateReason struct
-type ErrorValidateReason struct {
+	ErrorValidate *map[string]ResponseErrorValidate
 }
 
 // ==============================================================
@@ -63,13 +52,15 @@ type RequestSort struct {
 	By    string `json:"by"`
 }
 
+// ==============================================================
+
 // ResponseDataList for Send Response Message to Encode Response
 type ResponseDataList struct {
 	Success            bool                `json:"success"              swaggertype:"boolean"`
 	Message            string              `json:"message"              swaggertype:"string"`
 	Data               interface{}         `json:"data,omitempty"       swaggertype:"object"`
 	ResponsePagination *ResponsePagination `json:"pagination,omitempty" swaggertype:"object"`
-	ResponseError      *ResponseError      `json:"error,omitempty"      swaggertype:"object"` // errors don't define JSON marshaling`
+	ResponseError      *ResponseError      `json:"error,omitempty"      swaggertype:"object"`
 }
 
 // ResponsePagination Struct
@@ -83,8 +74,15 @@ type ResponsePagination struct {
 
 // ResponseError Struct
 type ResponseError struct {
-	Message  string                    `json:"message" swaggertype:"string"`
-	Validate *map[string]ErrorValidate `json:"validate,omitempty" swaggertype:"object"`
+	Message  string                            `json:"message" swaggertype:"string"`
+	Validate *map[string]ResponseErrorValidate `json:"validate,omitempty" swaggertype:"object"`
+}
+
+// ResponseErrorValidate struct
+type ResponseErrorValidate struct {
+	Reason  string `json:"reason"`
+	Message string `json:"message"`
+	Param   string `json:"param,omitempty"`
 }
 
 // ==============================================================

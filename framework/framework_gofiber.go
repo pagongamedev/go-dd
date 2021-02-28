@@ -310,7 +310,9 @@ func (context *ContextGofiber) Log(v ...interface{}) {
 
 //SetLang func
 func (context *ContextGofiber) SetLang(lang string) {
-	context.i18n.SetLang(lang)
+	if context.i18n != nil {
+		context.i18n.SetLang(lang)
+	}
 }
 
 //GetLang func
