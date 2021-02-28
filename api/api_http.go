@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"net/http"
+	"reflect"
 
 	godd "github.com/pagongamedev/go-dd"
 	mdw "github.com/pagongamedev/go-dd/middleware"
@@ -386,6 +387,12 @@ func MappingStandard(code int, dataList interface{}, responsePagination *godd.Re
 	if dataList == nil {
 		dataList = []string{}
 	}
+
+	if reflect.ValueOf(dataList).Kind() != reflect.Slice {
+		log.Println("Warning : Input Data Response Not Array")
+		dataList = append(([]interface{}{}), dataList)
+	}
+
 	isSuccess := code/100 == 2
 	var message string
 	if isSuccess {

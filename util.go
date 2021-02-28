@@ -205,3 +205,8 @@ func IsInterfaceIsNil(i interface{}) bool {
 	return reflect.ValueOf(i).IsNil()
 
 }
+
+// ConvertToArray func
+func ConvertToArray(dataList interface{}) []interface{} {
+	return append(([]interface{}{}), dataList)
+}

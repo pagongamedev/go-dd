@@ -40,7 +40,7 @@ func handlerHello() *goddAPI.HTTP {
 	})
 
 	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
-		return 200, godd.Map{"Message": "Hello Go-DD"}, nil, nil
+		return 200, godd.ConvertToArray(godd.Map{"Message": "Hello Go-DD"}), nil, nil
 	})
 
 	return api
