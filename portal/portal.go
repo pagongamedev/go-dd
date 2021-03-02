@@ -102,7 +102,10 @@ func (pt *Portal) AppendInterfaceClose(iList ...interface{}) {
 
 func (pt *Portal) deferInterfaceClose() {
 	for _, iClose := range pt.iCloseList {
-		iClose.Close()
+		err := iClose.Close()
+		if err != nil {
+			log.Println("InterfaceClose Error:", err)
+		}
 	}
 }
 
