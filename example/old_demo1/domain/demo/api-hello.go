@@ -26,20 +26,20 @@ func HandlerHello() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
 	api.LifeCycle.ValidateRequest(func(context godd.InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *godd.Error) {
+		user := new(User)
+
+		context.BodyParser(user)
 		// SetDefault Request
 		context.SetDefaultStruct(user)
 		// Validate Request
 		errors := context.ValidateStruct(user, godd.Map{"User": &User{}, "Job": &Job{}})
 		if errors != nil {
-			return http.StatusBadRequest, nil, nil, errors
+			return http.StatusBadRequest, nil
 		}
 		return user, nil
 	})
 	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
-		user := new(User)
-
-		context.BodyParser(user)
-
+		user := requestValidatedBody.(*User)
 		return http.StatusOK, user, nil, nil
 	})
 	return api

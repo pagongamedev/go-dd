@@ -2,8 +2,8 @@ package main
 
 import (
 	fiber "github.com/gofiber/fiber/v2"
-	_ "github.com/pagongamedev/go-dd/example/demo1/docs"
-	"github.com/pagongamedev/go-dd/example/demo1/domain/demo"
+	_ "github.com/pagongamedev/go-dd/example/old_demo1/docs"
+	"github.com/pagongamedev/go-dd/example/old_demo1/domain/demo"
 	goddPortal "github.com/pagongamedev/go-dd/portal"
 	goddGofiber "github.com/pagongamedev/go-dd/support/gofiber"
 )
