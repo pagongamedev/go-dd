@@ -3,6 +3,9 @@ package godd
 // Map type
 type Map map[string]interface{}
 
+// MapString type
+type MapString map[string]string
+
 // Handler type
 type Handler func(InterfaceContext) error
 
