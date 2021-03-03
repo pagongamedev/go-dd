@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	fiber "github.com/gofiber/fiber/v2"
 	_ "github.com/pagongamedev/go-dd/example/old_demo1/docs"
 	"github.com/pagongamedev/go-dd/example/old_demo1/domain/demo"
@@ -8,13 +10,25 @@ import (
 	goddGofiber "github.com/pagongamedev/go-dd/support/gofiber"
 )
 
+type a struct {
+}
+
+func (a *a) Close() error {
+	log.Println("Close")
+	return nil
+}
+
 func main() {
 	portal := goddPortal.New()
 	appMain := appMain()
 
-	portal.AppendApp(appMain, ":8083")
-	portal.AppendApp(goddGofiber.AppAPIDocument(), ":8081")
-	portal.AppendApp(goddGofiber.AppMetricsPrometheus(appMain), ":8082")
+	aa := a{}
+
+	portal.AppendApp(appMain, ":8081")
+	portal.AppendApp(goddGofiber.AppAPIDocument(), ":8082")
+	portal.AppendApp(goddGofiber.AppMetricsPrometheus(appMain), ":8083")
+
+	portal.AppendInterfaceClose(&aa)
 
 	portal.StartServer()
 }

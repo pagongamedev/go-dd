@@ -2,6 +2,9 @@ package portal
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	godd "github.com/pagongamedev/go-dd"
@@ -52,7 +55,9 @@ func startAppGoroutine(app appServe, errc chan error) {
 }
 
 func shutdownAppGoroutine(app appServe) {
-	godd.MustError(app.app.Shutdown())
+	err := app.app.Shutdown()
+	godd.MustError(err)
+	log.Println("Shutdown App " + app.port)
 }
 
 func waitAppAppGoroutine(errc chan error, waitTimeForError int64) {
@@ -80,15 +85,14 @@ func (pt *Portal) StartServer() {
 	}
 
 	// Defer InterfaceClose
-	defer pt.deferInterfaceClose()
+	defer pt.deferQuitApp()
+
+	// Check Defer when Ctrl+C in Command
+	pt.checkInterruptQuit()
 
 	// Running Server Wait for Error
 	waitAppAppGoroutine(errc, 1)
 
-	for _, app := range pt.appList {
-		shutdownAppGoroutine(app)
-	}
-	log.Println("End Portal")
 }
 
 //================================================
@@ -107,6 +111,27 @@ func (pt *Portal) deferInterfaceClose() {
 			log.Println("InterfaceClose Error:", err)
 		}
 	}
+}
+
+func (pt *Portal) checkInterruptQuit() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-c
+		pt.deferQuitApp()
+		os.Exit(1)
+	}()
+}
+
+//=====================================
+func (pt *Portal) deferQuitApp() {
+	for _, app := range pt.appList {
+		shutdownAppGoroutine(app)
+	}
+
+	pt.deferInterfaceClose()
+	log.Println("End Portal")
 }
 
 //=====================================
