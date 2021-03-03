@@ -160,22 +160,22 @@ func (i *I18N) GetLang() string {
 //====================
 
 // EnvironmentSwitcher func
-func EnvironmentSwitcher(env string, Localhost int, Development int, UAT int, Staging int, Production int, i ...interface{}) interface{} {
+func EnvironmentSwitcher(env string, Localhost int, Development int, Testing int, Staging int, Production int, i ...interface{}) interface{} {
 	var index int
-	switch env {
-	case "localhost":
+	switch Env(env) {
+	case EnvLocalhost:
 		index = Localhost
 		break
-	case "development":
+	case EnvDevelopment:
 		index = Development
 		break
-	case "uat":
-		index = UAT
+	case EnvTesting:
+		index = Testing
 		break
-	case "staging":
+	case EnvStaging:
 		index = Staging
 		break
-	case "production":
+	case EnvProduction:
 		index = Production
 		break
 	}

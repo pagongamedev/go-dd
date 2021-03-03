@@ -18,9 +18,25 @@ type Handler func(InterfaceContext) error
 // FrameWork type
 type FrameWork string
 
-var (
+const (
 	// FrameWorkGofiber FrameWork
 	FrameWorkGofiber FrameWork = "gofiber"
+)
+
+// Env type
+type Env string
+
+const (
+	// EnvLocalhost Env
+	EnvLocalhost Env = "localhost"
+	// EnvDevelopment Env
+	EnvDevelopment Env = "development"
+	// EnvTesting Env
+	EnvTesting Env = "testing"
+	// EnvStaging Env
+	EnvStaging Env = "staging"
+	// EnvProduction Env
+	EnvProduction Env = "production"
 )
 
 // ==============================================================
