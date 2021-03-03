@@ -4,6 +4,7 @@ import (
 	"log"
 
 	fiber "github.com/gofiber/fiber/v2"
+	godd "github.com/pagongamedev/go-dd"
 	_ "github.com/pagongamedev/go-dd/example/old_demo1/docs"
 	"github.com/pagongamedev/go-dd/example/old_demo1/domain/demo"
 	goddPortal "github.com/pagongamedev/go-dd/portal"
@@ -28,7 +29,7 @@ func main() {
 	portal.AppendApp(goddGofiber.AppAPIDocument(), ":8082")
 	portal.AppendApp(goddGofiber.AppMetricsPrometheus(appMain), ":8083")
 
-	portal.AppendInterfaceClose(&aa)
+	portal.AppendDeferClose(godd.DeferClose{Name: "A", I: &aa})
 
 	portal.StartServer()
 }

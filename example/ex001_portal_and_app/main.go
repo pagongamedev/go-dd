@@ -25,7 +25,7 @@ func main() {
 
 	portal := goddPortal.New()
 	// Manage Defer Interface.Close()
-	portal.AppendInterfaceClose(db)
+	portal.AppendDeferClose(godd.DeferClose{Name: "database", I: db.(godd.InterfaceClose)})
 	// Create API On Port 8081
 	portal.AppendApp(appMain, ":8081")
 	// Create Swagger Document On Port 8082

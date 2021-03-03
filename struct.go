@@ -6,6 +6,12 @@ type Map map[string]interface{}
 // MapString type
 type MapString map[string]string
 
+// DeferClose struct
+type DeferClose struct {
+	Name string
+	I    InterfaceClose
+}
+
 // Handler type
 type Handler func(InterfaceContext) error
 

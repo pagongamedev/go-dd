@@ -13,8 +13,8 @@ import (
 
 // Portal Struct
 type Portal struct {
-	appList    []appServe
-	iCloseList []godd.InterfaceClose
+	appList        []appServe
+	deferCloseList []godd.DeferClose
 	// router fiber.Router
 }
 
@@ -97,19 +97,20 @@ func (pt *Portal) StartServer() {
 
 //================================================
 
-// AppendInterfaceClose Func
-func (pt *Portal) AppendInterfaceClose(iList ...interface{}) {
-	for _, i := range iList {
-		pt.iCloseList = append(pt.iCloseList, i.(godd.InterfaceClose))
+// AppendDeferClose Func
+func (pt *Portal) AppendDeferClose(iList ...godd.DeferClose) {
+	for _, d := range iList {
+		pt.deferCloseList = append(pt.deferCloseList, d)
 	}
 }
 
-func (pt *Portal) deferInterfaceClose() {
-	for _, iClose := range pt.iCloseList {
-		err := iClose.Close()
+func (pt *Portal) deferClose() {
+	for _, d := range pt.deferCloseList {
+		err := d.I.Close()
 		if err != nil {
-			log.Println("InterfaceClose Error:", err)
+			log.Printf("InterfaceClose %v Error : %v\n", d.Name, err)
 		}
+		log.Printf("Defer Close : %v\n", d.Name)
 	}
 }
 
@@ -130,7 +131,7 @@ func (pt *Portal) deferQuitApp() {
 		shutdownAppGoroutine(app)
 	}
 
-	pt.deferInterfaceClose()
+	pt.deferClose()
 	log.Println("End Portal")
 }
 
