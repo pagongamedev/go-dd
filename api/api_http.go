@@ -182,6 +182,11 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 			return encodeErrorHandler(context, err)
 		}
 
+		err = api.LifeCycle.GetValidateRole()(context)
+		if err != nil {
+			return encodeErrorHandler(context, err)
+		}
+
 		err = api.LifeCycle.GetOnPostAuth()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)

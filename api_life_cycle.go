@@ -6,6 +6,7 @@ type APILifeCycle struct {
 	parseLanguage           HandlerCycle
 	onPreAuth               HandlerCycle
 	validateAuth            HandlerCycle
+	validateRole            HandlerCycle
 	onPostAuth              HandlerCycle
 	validateHeader          HandlerCycle
 	validateParam           ValidateParam
@@ -82,6 +83,11 @@ func (api *APILifeCycle) OnPreAuth(handler HandlerCycle) {
 // ValidateAuth func
 func (api *APILifeCycle) ValidateAuth(handler HandlerCycle) {
 	api.validateAuth = handler
+}
+
+// ValidateRole func
+func (api *APILifeCycle) ValidateRole(handler HandlerCycle) {
+	api.validateRole = handler
 }
 
 // OnPostAuth func
@@ -174,6 +180,11 @@ func (api *APILifeCycle) GetOnPreAuth() HandlerCycle {
 // GetValidateAuth func
 func (api *APILifeCycle) GetValidateAuth() HandlerCycle {
 	return api.validateAuth
+}
+
+// GetValidateRole func
+func (api *APILifeCycle) GetValidateRole() HandlerCycle {
+	return api.validateRole
 }
 
 // GetOnPostAuth func
