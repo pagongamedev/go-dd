@@ -306,7 +306,7 @@ func (api *HTTP) middlewareLifeCycleChecker() {
 	api.LifeCycle.ValidateAuth(i.(godd.ValidateAuth))
 
 	i = handlerlifeCycleChecker("ValidateRole", api.LifeCycle.GetValidateRole(), api.middleware.LifeCycle.GetValidateRole(), handlerValidateRole())
-	api.LifeCycle.ValidateAuth(i.(godd.ValidateAuth))
+	api.LifeCycle.ValidateRole(i.(godd.ValidateRole))
 
 	i = handlerlifeCycleChecker("OnPostAuth", api.LifeCycle.GetOnPostAuth(), api.middleware.LifeCycle.GetOnPostAuth(), handlerDefault())
 	api.LifeCycle.OnPostAuth(i.(godd.HandlerCycle))
