@@ -5,8 +5,8 @@ type APILifeCycle struct {
 	onStart                 HandlerCycle
 	parseLanguage           HandlerCycle
 	onPreAuth               HandlerCycle
-	validateAuth            HandlerCycle
-	validateRole            HandlerCycle
+	validateAuth            ValidateAuth
+	validateRole            ValidateRole
 	onPostAuth              HandlerCycle
 	validateHeader          HandlerCycle
 	validateParam           ValidateParam
@@ -37,6 +37,12 @@ type ValidateQuery = func(context InterfaceContext) (requestValidatedQuery inter
 
 // ParseRequest Type
 type ParseRequest = func(context InterfaceContext) (requestMappingBody interface{}, err *Error)
+
+// ValidateAuth Type
+type ValidateAuth = func(context InterfaceContext) (roleData interface{}, err *Error)
+
+// ValidateRole Type
+type ValidateRole = func(context InterfaceContext, roleData interface{}) (err *Error)
 
 // ValidateRequest Type
 type ValidateRequest = func(context InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *Error)
@@ -81,12 +87,12 @@ func (api *APILifeCycle) OnPreAuth(handler HandlerCycle) {
 }
 
 // ValidateAuth func
-func (api *APILifeCycle) ValidateAuth(handler HandlerCycle) {
+func (api *APILifeCycle) ValidateAuth(handler ValidateAuth) {
 	api.validateAuth = handler
 }
 
 // ValidateRole func
-func (api *APILifeCycle) ValidateRole(handler HandlerCycle) {
+func (api *APILifeCycle) ValidateRole(handler ValidateRole) {
 	api.validateRole = handler
 }
 
@@ -178,12 +184,12 @@ func (api *APILifeCycle) GetOnPreAuth() HandlerCycle {
 }
 
 // GetValidateAuth func
-func (api *APILifeCycle) GetValidateAuth() HandlerCycle {
+func (api *APILifeCycle) GetValidateAuth() ValidateAuth {
 	return api.validateAuth
 }
 
 // GetValidateRole func
-func (api *APILifeCycle) GetValidateRole() HandlerCycle {
+func (api *APILifeCycle) GetValidateRole() ValidateRole {
 	return api.validateRole
 }
 

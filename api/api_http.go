@@ -31,6 +31,18 @@ func handlerDefault() godd.HandlerCycle {
 	}
 }
 
+func handlerValidateAuth() godd.ValidateAuth {
+	return func(context godd.InterfaceContext) (roleData interface{}, err *godd.Error) {
+		return nil, nil
+	}
+}
+
+func handlerValidateRole() godd.ValidateRole {
+	return func(context godd.InterfaceContext, roleData interface{}) (err *godd.Error) {
+		return nil
+	}
+}
+
 func handlerValidateParam() godd.ValidateParam {
 	return func(context godd.InterfaceContext) (requestValidatedParam interface{}, err *godd.Error) {
 		return nil, nil
@@ -177,12 +189,12 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.LifeCycle.GetValidateAuth()(context)
+		roleData, err := api.LifeCycle.GetValidateAuth()(context)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
 
-		err = api.LifeCycle.GetValidateRole()(context)
+		err = api.LifeCycle.GetValidateRole()(context, roleData)
 		if err != nil {
 			return encodeErrorHandler(context, err)
 		}
@@ -290,8 +302,11 @@ func (api *HTTP) middlewareLifeCycleChecker() {
 	i = handlerlifeCycleChecker("OnPreAuth", api.LifeCycle.GetOnPreAuth(), api.middleware.LifeCycle.GetOnPreAuth(), handlerDefault())
 	api.LifeCycle.OnPreAuth(i.(godd.HandlerCycle))
 
-	i = handlerlifeCycleChecker("ValidateAuth", api.LifeCycle.GetValidateAuth(), api.middleware.LifeCycle.GetValidateAuth(), handlerDefault())
-	api.LifeCycle.ValidateAuth(i.(godd.HandlerCycle))
+	i = handlerlifeCycleChecker("ValidateAuth", api.LifeCycle.GetValidateAuth(), api.middleware.LifeCycle.GetValidateAuth(), handlerValidateAuth())
+	api.LifeCycle.ValidateAuth(i.(godd.ValidateAuth))
+
+	i = handlerlifeCycleChecker("ValidateRole", api.LifeCycle.GetValidateRole(), api.middleware.LifeCycle.GetValidateRole(), handlerValidateRole())
+	api.LifeCycle.ValidateAuth(i.(godd.ValidateAuth))
 
 	i = handlerlifeCycleChecker("OnPostAuth", api.LifeCycle.GetOnPostAuth(), api.middleware.LifeCycle.GetOnPostAuth(), handlerDefault())
 	api.LifeCycle.OnPostAuth(i.(godd.HandlerCycle))

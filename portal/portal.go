@@ -2,9 +2,6 @@ package portal
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	godd "github.com/pagongamedev/go-dd"
@@ -50,7 +47,10 @@ func startAppGoroutine(app appServe, errc chan error) {
 		select {
 		case ch <- err:
 			return
+		default:
+
 		}
+
 	}()
 }
 
@@ -60,7 +60,7 @@ func shutdownAppGoroutine(app appServe) {
 	log.Println("Shutdown App " + app.port)
 }
 
-func waitAppAppGoroutine(errc chan error, waitTimeForError int64) {
+func waitAppGoroutine(errc chan error, waitTimeForError int64) {
 	var timeEnd int64
 	for timeEnd == 0 || timeEnd > time.Now().Unix() {
 
@@ -70,9 +70,8 @@ func waitAppAppGoroutine(errc chan error, waitTimeForError int64) {
 			if timeEnd == 0 {
 				timeEnd = time.Now().Unix() + waitTimeForError
 			}
-			break
 		default:
-			break
+
 		}
 	}
 }
@@ -91,7 +90,7 @@ func (pt *Portal) StartServer() {
 	pt.checkInterruptQuit()
 
 	// Running Server Wait for Error
-	waitAppAppGoroutine(errc, 1)
+	waitAppGoroutine(errc, 1)
 
 }
 
@@ -99,9 +98,7 @@ func (pt *Portal) StartServer() {
 
 // AppendDeferClose Func
 func (pt *Portal) AppendDeferClose(iList ...godd.DeferClose) {
-	for _, d := range iList {
-		pt.deferCloseList = append(pt.deferCloseList, d)
-	}
+	pt.deferCloseList = append(pt.deferCloseList, iList...)
 }
 
 func (pt *Portal) deferClose() {
@@ -115,14 +112,14 @@ func (pt *Portal) deferClose() {
 }
 
 func (pt *Portal) checkInterruptQuit() {
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	// c := make(chan os.Signal)
+	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	go func() {
-		<-c
-		pt.deferQuitApp()
-		os.Exit(1)
-	}()
+	// go func() {
+	// 	<-c
+	// 	pt.deferQuitApp()
+	// 	os.Exit(1)
+	// }()
 }
 
 //=====================================
