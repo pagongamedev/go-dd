@@ -27,49 +27,49 @@ type APILifeCycle struct {
 type HandlerByPass = func(service interface{}, serviceOptionList map[string]interface{}) Handler
 
 // HandlerCycle Type
-type HandlerCycle = func(context InterfaceContext) (err *Error)
+type HandlerCycle = func(context InterfaceContext) (goddErr *Error)
 
 // ValidateParam Type
-type ValidateParam = func(context InterfaceContext) (requestValidatedParam interface{}, err *Error)
+type ValidateParam = func(context InterfaceContext) (requestValidatedParam interface{}, goddErr *Error)
 
 // ValidateQuery Type
-type ValidateQuery = func(context InterfaceContext) (requestValidatedQuery interface{}, err *Error)
+type ValidateQuery = func(context InterfaceContext) (requestValidatedQuery interface{}, goddErr *Error)
 
 // ParseRequest Type
-type ParseRequest = func(context InterfaceContext) (requestMappingBody interface{}, err *Error)
+type ParseRequest = func(context InterfaceContext) (requestMappingBody interface{}, goddErr *Error)
 
 // ValidateAuth Type
-type ValidateAuth = func(context InterfaceContext) (roleData interface{}, err *Error)
+type ValidateAuth = func(context InterfaceContext) (roleData interface{}, goddErr *Error)
 
 // ValidateRole Type
-type ValidateRole = func(context InterfaceContext, roleData interface{}) (err *Error)
+type ValidateRole = func(context InterfaceContext, roleData interface{}) (goddErr *Error)
 
 // ValidateRequest Type
-type ValidateRequest = func(context InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *Error)
+type ValidateRequest = func(context InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, goddErr *Error)
 
 // OnPreHandler Type
-type OnPreHandler = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, err *Error)
+type OnPreHandler = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (requestValidatedBodyOut interface{}, requestValidatedParamOut interface{}, requestValidatedQueryOut interface{}, goddErr *Error)
 
 // HandlerLogic Type
-type HandlerLogic = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, err *Error)
+type HandlerLogic = func(context InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *ResponsePagination, goddErr *Error)
 
 // OnPostHandler Type
-type OnPostHandler = func(context InterfaceContext, code int, responseRawIn interface{}, responsePagination *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type OnPostHandler = func(context InterfaceContext, code int, responseRawIn interface{}, responsePagination *ResponsePagination) (codeOut int, responseRawOut interface{}, responsePaginationOut *ResponsePagination, goddErr *Error)
 
 // MappingResponse Type
-type MappingResponse = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type MappingResponse = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, responsePaginationOut *ResponsePagination, goddErr *Error)
 
 // ValidateResponse Type
-type ValidateResponse = func(context InterfaceContext, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, err *Error)
+type ValidateResponse = func(context InterfaceContext, code int, responseMapping interface{}, responsePagination *ResponsePagination) (codeOut int, responseValidated interface{}, responsePaginationOut *ResponsePagination, goddErr *Error)
 
 // MappingResponseStandard Type
-type MappingResponseStandard = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, err *Error)
+type MappingResponseStandard = func(context InterfaceContext, code int, responseRaw interface{}, responsePagination *ResponsePagination) (codeOut int, responseMapping interface{}, goddErr *Error)
 
 // OnPreResponse Type
-type OnPreResponse = func(context InterfaceContext, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, err *Error)
+type OnPreResponse = func(context InterfaceContext, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, goddErr *Error)
 
 // SendResponse Type
-type SendResponse = func(context InterfaceContext, code int, requestValidated interface{}) (err *Error)
+type SendResponse = func(context InterfaceContext, code int, requestValidated interface{}) (goddErr *Error)
 
 // OnStart func
 func (api *APILifeCycle) OnStart(handler HandlerCycle) {

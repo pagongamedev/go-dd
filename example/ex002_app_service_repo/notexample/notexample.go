@@ -35,12 +35,7 @@ func Router(app *fiber.App, path string, service interface{}) *goddMicroService.
 func handlerHello() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
-	api.LifeCycle.ValidateAuth(func(context godd.InterfaceContext) (err *godd.Error) {
-
-		return nil
-	})
-
-	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
+	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
 		svc := context.GetService().(*service.DemoService)
 		response, err := svc.MessageRead("Hello Go-DD Service")
 		return 200, godd.ConvertToArray(response), nil, err

@@ -210,3 +210,11 @@ func IsInterfaceIsNil(i interface{}) bool {
 func ConvertToArray(dataList interface{}) []interface{} {
 	return append(([]interface{}{}), dataList)
 }
+
+// Helper Error
+func ErrorNew(code int, err error) *Error {
+	return &Error{
+		Code:  code,
+		Error: err,
+	}
+}

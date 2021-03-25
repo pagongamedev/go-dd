@@ -25,7 +25,7 @@ type User struct {
 func HandlerHello() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
-	api.LifeCycle.ValidateRequest(func(context godd.InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, err *godd.Error) {
+	api.LifeCycle.ValidateRequest(func(context godd.InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, goddErr *godd.Error) {
 		user := new(User)
 
 		context.BodyParser(user)
@@ -38,7 +38,7 @@ func HandlerHello() *goddAPI.HTTP {
 		}
 		return user, nil
 	})
-	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, err *godd.Error) {
+	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
 		user := requestValidatedBody.(*User)
 		return http.StatusOK, user, nil, nil
 	})
