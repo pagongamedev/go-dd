@@ -2,10 +2,13 @@ package godd
 
 import (
 	"log"
+	"math"
+	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/jmoiron/sqlx"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	defaults "github.com/pagongamedev/temp-go-defaults"
 	"golang.org/x/text/language"
@@ -165,19 +168,14 @@ func EnvironmentSwitcher(env string, Localhost int, Development int, Testing int
 	switch Env(env) {
 	case EnvLocalhost:
 		index = Localhost
-		break
 	case EnvDevelopment:
 		index = Development
-		break
 	case EnvTesting:
 		index = Testing
-		break
 	case EnvStaging:
 		index = Staging
-		break
 	case EnvProduction:
 		index = Production
-		break
 	}
 
 	if index < 0 || index > len(i)-1 {
@@ -217,4 +215,77 @@ func ErrorNew(code int, err error) *Error {
 		Code:  code,
 		Error: err,
 	}
+}
+
+//====================
+
+// Pagination
+
+func GetResponsePagination(requestPagination RequestPagination, totalCount int, itemCount int) *ResponsePagination {
+	var pageCount int
+
+	if totalCount != 0 {
+		pageCount = (int)(math.Ceil((float64)(totalCount) / (float64)(requestPagination.PageSize)))
+	}
+
+	responsePagination := &ResponsePagination{
+		Page:       requestPagination.Page,
+		PageSize:   requestPagination.PageSize,
+		PageCount:  pageCount,
+		ItemCount:  itemCount,
+		TotalCount: totalCount,
+	}
+
+	return responsePagination
+}
+
+//====================
+
+// Sqlx
+
+func SqlxQueryOne(rows *sqlx.Rows, err error, template interface{}) (interface{}, *Error) {
+	if err != nil || rows == nil {
+		return false, ErrorNew(http.StatusUnauthorized, err)
+	}
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
+	isFind := false
+	for rows.Next() {
+		isFind = true
+		err = rows.StructScan(template)
+		if err != nil {
+			return false, ErrorNew(http.StatusUnauthorized, err)
+		}
+	}
+	if !isFind {
+		return nil, nil
+	}
+
+	return template, nil
+}
+
+func SqlxQueryFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *Error {
+	if err != nil || rows == nil {
+		return ErrorNew(http.StatusUnauthorized, err)
+	}
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+	for rows.Next() {
+
+		err = fnc(rows)
+		if err != nil {
+			return ErrorNew(http.StatusUnauthorized, err)
+		}
+	}
+
+	return nil
 }
