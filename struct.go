@@ -1,5 +1,10 @@
 package godd
 
+import (
+	"errors"
+	"strings"
+)
+
 // Map type
 type Map map[string]interface{}
 
@@ -46,6 +51,20 @@ type Error struct {
 	Code          int // Please Use http.Status
 	Error         error
 	ErrorValidate *map[string]ResponseErrorValidate
+}
+
+func (e *Error) IsContain(subString string) bool {
+	return strings.Contains(e.Error.Error(), subString)
+}
+
+func (e *Error) SetError(str string) {
+	e.Error = errors.New(str)
+}
+
+func (e *Error) IsContainSetError(subString string, errorString string) {
+	if e.IsContain(subString) {
+		e.SetError(errorString)
+	}
 }
 
 // ==============================================================
