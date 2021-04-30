@@ -58,6 +58,7 @@ func ValidateStruct(i18n *I18N, i interface{}, iType map[string]interface{}) *Er
 
 	if errList != nil {
 		return &Error{
+			Code:          401,
 			errorValidate: errList,
 		}
 	}

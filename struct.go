@@ -79,8 +79,11 @@ func (e *Error) GetMessage() string {
 	if e.message != "" {
 		return e.message
 	}
+	if e.errorValidate != nil {
+		return http.StatusText(e.Code)
+	}
 
-	if e.Error != nil {
+	if e.Error != nil && e.Error.Error() != "" {
 		return e.Error.Error()
 	} else {
 		return http.StatusText(e.Code)
