@@ -111,7 +111,7 @@ func (pt *Portal) StartServer() {
 	defer pt.deferQuitApp()
 
 	// Check Defer when Ctrl+C in Command
-	pt.checkInterruptQuit()
+	pt.checkInterruptQuit(done)
 
 	// Running Server Wait for Error
 	waitAppGoroutine(errc, done, 1)
@@ -137,7 +137,7 @@ func (pt *Portal) deferClose() {
 	}
 }
 
-func (pt *Portal) checkInterruptQuit() {
+func (pt *Portal) checkInterruptQuit(done chan bool) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
@@ -146,6 +146,7 @@ func (pt *Portal) checkInterruptQuit() {
 			if sig != nil {
 				log.Printf("\nClose With Ctrl C\n")
 				pt.deferQuitApp()
+				done <- true
 				// os.Exit(1)
 			}
 		}
