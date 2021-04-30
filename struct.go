@@ -28,8 +28,13 @@ type FrameWork string
 
 const (
 	// FrameWorkGofiber FrameWork
-	FrameWorkGofiber FrameWork = "gofiber"
+	FrameWorkGofiberV2 FrameWork = "gofiber/v2"
 )
+
+type App struct {
+	App       interface{}
+	FrameWork FrameWork
+}
 
 // Env type
 type Env string

@@ -1,11 +1,12 @@
-package gofiber
+package v2
 
 import (
 	"net/http"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/pagongamedev/go-dd/support/gofiber/middleware"
+	godd "github.com/pagongamedev/go-dd"
+	"github.com/pagongamedev/go-dd/support/gofiber/v2/middleware"
 )
 
 //=============== Gofiber ======================
@@ -27,4 +28,11 @@ func AppMetricsPrometheus(mainApp *fiber.App) *fiber.App {
 	mdwPrometheus.Register(mainApp)
 	mdwPrometheus.SetupPath(app)
 	return app
+}
+
+func NewApp() (*godd.App, *fiber.App) {
+	app := fiber.New()
+	goddApp := &godd.App{App: app, FrameWork: godd.FrameWorkGofiberV2}
+
+	return goddApp, app
 }
