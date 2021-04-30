@@ -127,7 +127,6 @@ func (pt *Portal) AppendDeferClose(iList ...godd.DeferClose) {
 }
 
 func (pt *Portal) deferClose() {
-	log.Printf("Start Defer Close\n")
 	for _, d := range pt.deferCloseList {
 		err := d.I.Close()
 		if err != nil {
