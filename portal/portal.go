@@ -8,7 +8,6 @@ import (
 	"time"
 
 	godd "github.com/pagongamedev/go-dd"
-	"github.com/pagongamedev/go-dd/framework"
 )
 
 // Portal Struct
@@ -44,9 +43,8 @@ type appServe struct {
 }
 
 // AppendApp Func
-func (pt *Portal) AppendApp(app interface{}, port string, fw ...godd.FrameWork) {
+func (pt *Portal) AppendApp(interfaceApp godd.InterfaceApp, port string) {
 
-	interfaceApp := framework.AdapterApp(app, fw...)
 	addAPIGetHealth(interfaceApp)
 
 	pt.appList = append(pt.appList, appServe{

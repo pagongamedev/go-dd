@@ -3,7 +3,6 @@ package microservice
 import (
 	godd "github.com/pagongamedev/go-dd"
 	"github.com/pagongamedev/go-dd/api"
-	"github.com/pagongamedev/go-dd/framework"
 	mdw "github.com/pagongamedev/go-dd/middleware"
 )
 
@@ -17,9 +16,8 @@ type MicroService struct {
 }
 
 // New API
-func New(app interface{}, path string, service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N, fw ...godd.FrameWork) *MicroService {
+func New(interfaceApp godd.InterfaceApp, path string, service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N) *MicroService {
 
-	interfaceApp := framework.AdapterApp(app, fw...)
 	router := interfaceApp.Group(path)
 	return &MicroService{
 		router:            router,

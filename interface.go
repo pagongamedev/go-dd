@@ -12,6 +12,7 @@ type InterfaceClose interface {
 // InterfaceApp interface
 type InterfaceApp interface {
 	GetFramework() FrameWork
+	App() interface{}
 	GetFrameworkApp() interface{}
 	Listen(port string) error
 	Shutdown() error

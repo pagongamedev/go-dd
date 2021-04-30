@@ -12,27 +12,20 @@ import (
 //=============== Gofiber ======================
 
 // AppAPIDocument Func
-func AppAPIDocument() *fiber.App {
-	app := fiber.New()
+func AppAPIDocument() godd.InterfaceApp {
+	goddApp, app := NewApp()
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/swagger/index.html", http.StatusMovedPermanently)
 	})
 	app.Get("/swagger/*", swagger.Handler)
-	return app
+	return goddApp
 }
 
 // AppMetricsPrometheus Func
-func AppMetricsPrometheus(mainApp *fiber.App) *fiber.App {
-	app := fiber.New()
+func AppMetricsPrometheus(mainApp godd.InterfaceApp) godd.InterfaceApp {
+	goddApp, _ := NewApp()
 	mdwPrometheus := middleware.NewPrometheus("fiber", "http")
-	mdwPrometheus.Register(mainApp)
-	mdwPrometheus.SetupPath(app)
-	return app
-}
-
-func NewApp() (*godd.App, *fiber.App) {
-	app := fiber.New()
-	goddApp := &godd.App{App: app, FrameWork: godd.FrameWorkGofiberV2}
-
-	return goddApp, app
+	mdwPrometheus.Register(mainApp.App().(*fiber.App))
+	mdwPrometheus.SetupPath(goddApp.App().(*fiber.App))
+	return goddApp
 }

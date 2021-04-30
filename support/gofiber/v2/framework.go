@@ -1,4 +1,4 @@
-package framework
+package v2
 
 import (
 	"log"
@@ -9,18 +9,24 @@ import (
 
 //==================== Interface App ====================
 
-// AdapterAppGofiber Func
-func AdapterAppGofiber(app interface{}, framework godd.FrameWork) godd.InterfaceApp {
-	return &AppGofiber{
-		app:       app.(*fiber.App),
-		framework: framework,
+func NewApp() (godd.InterfaceApp, *fiber.App) {
+	app := fiber.New()
+	goddApp := &AppGofiber{
+		app:       app,
+		framework: godd.FrameWorkGofiberV2,
 	}
+	return goddApp, app
 }
 
 // AppGofiber struct
 type AppGofiber struct {
 	app       *fiber.App
 	framework godd.FrameWork
+}
+
+// GetFramework func
+func (app *AppGofiber) App() interface{} {
+	return app.app
 }
 
 // GetFramework func

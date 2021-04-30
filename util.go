@@ -1,6 +1,7 @@
 package godd
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -290,3 +291,44 @@ func SqlxQueryFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *Er
 
 	return nil
 }
+
+func SqlxAddValueCount(query string, iMax int) string {
+	str := ""
+
+	for i := 1; i <= iMax; i++ {
+		str += fmt.Sprintf("$%v", i)
+		if i != iMax {
+			str += ","
+		}
+	}
+	return strings.Replace(query, "{{Values}}", str, 1)
+}
+
+// func helperQueryMany(rows *sqlx.Rows, err error, dList interface{}, template interface{}) *godd.Error {
+// 	if err != nil || rows == nil {
+// 		return ErrorNew(http.StatusUnauthorized, err)
+// 	}
+// 	defer func() {
+// 		err := rows.Close()
+// 		if err != nil {
+// 			log.Println(err)
+// 		}
+// 	}()
+// 	vs := reflect.ValueOf(dList).Elem()
+// 	for rows.Next() {
+
+// 		a := reflect.ValueOf(dList).Elem()
+// 		fmt.Println("L ", a, a.Type(), a.Kind())
+
+// 		fmt.Println("A ", reflect.ValueOf(dList).Elem().Kind())
+
+// 		err = rows.StructScan(template)
+// 		if err != nil {
+// 			return ErrorNew(http.StatusUnauthorized, err)
+// 		}
+// 		vsNew := reflect.Append(vs, reflect.ValueOf(template).Elem())
+// 		vs.Set(vsNew)
+// 	}
+
+// 	return nil
+// }

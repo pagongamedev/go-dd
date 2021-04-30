@@ -31,11 +31,6 @@ const (
 	FrameWorkGofiberV2 FrameWork = "gofiber/v2"
 )
 
-type App struct {
-	App       interface{}
-	FrameWork FrameWork
-}
-
 // Env type
 type Env string
 
