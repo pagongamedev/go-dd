@@ -16,8 +16,23 @@ type Portal struct {
 }
 
 // New Func
-func New() *Portal {
-	return &Portal{}
+func New(secret *godd.MapString, funcEnvironment godd.FuncEnvironment, funcMiddleware godd.FuncEnvironment) (*Portal, *godd.MapString, *godd.Map, *godd.Map) {
+	portal := Portal{}
+	var stateEnvironment *godd.Map
+	var stateMiddleware *godd.Map
+	var deferCloseList *[]godd.DeferClose
+	if secret != nil {
+		if funcEnvironment != nil {
+			stateEnvironment, deferCloseList = funcEnvironment(*secret)
+			portal.AppendDeferClose((*deferCloseList)...)
+		}
+		if funcMiddleware != nil {
+			stateMiddleware, deferCloseList = funcMiddleware(*secret)
+			portal.AppendDeferClose((*deferCloseList)...)
+		}
+	}
+
+	return &portal, secret, stateEnvironment, stateMiddleware
 }
 
 type appServe struct {

@@ -17,6 +17,8 @@ type DeferClose struct {
 	I    InterfaceClose
 }
 
+type FuncEnvironment = func(secret MapString) (*Map, *[]DeferClose)
+
 // Handler type
 type Handler func(InterfaceContext) error
 
