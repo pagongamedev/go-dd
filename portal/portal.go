@@ -78,7 +78,7 @@ func shutdownAppGoroutine(app appServe) {
 	log.Println("Shutdown App " + app.port)
 }
 
-func waitAppGoroutine(errc chan error, waitTimeForError int64) {
+func waitAppGoroutine(errc chan error, done chan bool, waitTimeForError int64) {
 	var timeEnd int64
 	for timeEnd == 0 || timeEnd > time.Now().Unix() {
 
@@ -87,6 +87,11 @@ func waitAppGoroutine(errc chan error, waitTimeForError int64) {
 			log.Println(err)
 			if timeEnd == 0 {
 				timeEnd = time.Now().Unix() + waitTimeForError
+			}
+		case done := <-done:
+			if done == true {
+				timeEnd = time.Now().Unix() + waitTimeForError
+				break
 			}
 		default:
 
@@ -97,6 +102,7 @@ func waitAppGoroutine(errc chan error, waitTimeForError int64) {
 // StartServer Func
 func (pt *Portal) StartServer() {
 	errc := make(chan error)
+	done := make(chan bool, 1)
 	for _, app := range pt.appList {
 		startAppGoroutine(app, errc)
 	}
@@ -108,8 +114,9 @@ func (pt *Portal) StartServer() {
 	pt.checkInterruptQuit()
 
 	// Running Server Wait for Error
-	waitAppGoroutine(errc, 1)
+	waitAppGoroutine(errc, done, 1)
 
+	return
 }
 
 //================================================
@@ -136,6 +143,7 @@ func (pt *Portal) checkInterruptQuit() {
 	go func() {
 		for sig := range c {
 			if sig != nil {
+				log.Printf("\nClose With Ctrl C\n")
 				pt.deferQuitApp()
 				os.Exit(1)
 			}
