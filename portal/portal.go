@@ -144,10 +144,10 @@ func (pt *Portal) checkInterruptQuit(done chan bool) {
 	go func() {
 		for sig := range c {
 			if sig != nil {
-				log.Printf("\nClose With Ctrl C\n")
-				pt.deferQuitApp()
-				done <- true
+				log.Printf("Close With Ctrl C\n")
+				// pt.deferQuitApp()
 				// os.Exit(1)
+				done <- true
 			}
 		}
 	}()
