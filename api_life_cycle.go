@@ -264,3 +264,110 @@ func (api *APILifeCycle) GetSendResponse() SendResponse {
 }
 
 //========================================
+
+func (api *APILifeCycle) RunLifeCycle(context InterfaceContext) (int, interface{}, *Error) {
+	goddErr := api.GetOnStart()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	goddErr = api.GetParseLanguage()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	// ================== Auth =======================
+
+	goddErr = api.GetOnPreAuth()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	roleData, goddErr := api.GetValidateAuth()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	goddErr = api.GetValidateRole()(context, roleData)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	goddErr = api.GetOnPostAuth()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	// ================== Validate Request =======================
+
+	goddErr = api.GetValidateHeader()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	requestValidatedParam, goddErr := api.GetValidateParam()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	requestValidatedQuery, goddErr := api.GetValidateQuery()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	requestMappingBody, goddErr := api.GetParseRequest()(context)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	requestValidatedBody, goddErr := api.GetValidateRequest()(context, requestMappingBody)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	// ================== Handler =======================
+
+	requestValidatedBody, requestValidatedParam, requestValidatedQuery, goddErr = api.GetOnPreHandler()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	code, responseRaw, responsePagination, goddErr := api.GetHandlerLogic()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	code, responseRaw, responsePagination, goddErr = api.GetOnPostHandler()(context, code, responseRaw, responsePagination)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	// ================== Validate Response =======================
+
+	code, responseMapping, responsePagination, goddErr := api.GetMappingResponse()(context, code, responseRaw, responsePagination)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	code, responseValidated, responsePagination, goddErr := api.GetValidateResponse()(context, code, responseMapping, responsePagination)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	code, responseStandard, goddErr := api.GetMappingResponseStandard()(context, code, responseValidated, responsePagination)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	code, responseStandard, goddErr = api.GetOnPreResponse()(context, code, responseStandard)
+	if goddErr != nil {
+		return 0, nil, goddErr
+	}
+
+	// goddErr = api.GetSendResponse()(context, code, responseStandard)
+	// if goddErr != nil {
+	// 	return 0, nil, goddErr
+	// }
+
+	return code, responseStandard, goddErr
+}

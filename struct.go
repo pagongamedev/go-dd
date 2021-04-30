@@ -2,6 +2,7 @@ package godd
 
 import (
 	"errors"
+	"net/http"
 	"strings"
 )
 
@@ -51,8 +52,9 @@ const (
 // Error Struct
 type Error struct {
 	Code          int // Please Use http.Status
+	message       string
 	Error         error
-	ErrorValidate *map[string]ResponseErrorValidate
+	errorValidate *map[string]ResponseErrorValidate
 }
 
 func (e *Error) IsContain(subString string) bool {
@@ -67,6 +69,31 @@ func (e *Error) IsContainSetError(subString string, errorString string) {
 	if e.IsContain(subString) {
 		e.SetError(errorString)
 	}
+}
+
+func (e *Error) SetMessage(str string) {
+	e.message = str
+}
+
+func (e *Error) GetMessage() string {
+	if e.message != "" {
+		return e.message
+	}
+
+	if e.Error != nil {
+		return e.Error.Error()
+	} else {
+		return http.StatusText(e.Code)
+	}
+}
+
+func (e *Error) SetErrorValidate(errorValidate *map[string]ResponseErrorValidate) {
+	e.Code = http.StatusBadRequest
+	e.errorValidate = errorValidate
+}
+
+func (e *Error) GetErrorValidate() *map[string]ResponseErrorValidate {
+	return e.errorValidate
 }
 
 // ==============================================================

@@ -2,7 +2,6 @@ package api
 
 import (
 	"log"
-	"net/http"
 	"reflect"
 
 	godd "github.com/pagongamedev/go-dd"
@@ -57,13 +56,14 @@ func handlerValidateQuery() godd.ValidateQuery {
 func handlerParseLanguage() godd.HandlerCycle {
 	return func(context godd.InterfaceContext) (goddgoddErr *godd.Error) {
 
-		acceptLanguage := context.GetHeader("Accept-Language")
-		if acceptLanguage == "" {
-			acceptLanguage = "en-US"
+		if context != nil {
+			acceptLanguage := context.GetHeader("Accept-Language")
+			if acceptLanguage == "" {
+				acceptLanguage = "en-US"
+			}
+
+			context.SetLang(acceptLanguage)
 		}
-
-		context.SetLang(acceptLanguage)
-
 		return nil
 	}
 }
@@ -127,7 +127,9 @@ func handlerOnPreResponseDefault() godd.OnPreResponse {
 func handlerSendResponseDefault() godd.SendResponse {
 	return func(context godd.InterfaceContext, code int, responseStandard interface{}) (goddgoddErr *godd.Error) {
 		if !godd.IsInterfaceIsNil(responseStandard) {
-			context.Response(responseStandard, code)
+			if context != nil {
+				context.Response(responseStandard, code)
+			}
 		}
 		return nil
 	}
@@ -171,101 +173,7 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 			}
 		}
 		// ================== Start =======================
-
-		goddErr = api.LifeCycle.GetOnStart()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		goddErr = api.LifeCycle.GetParseLanguage()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		// ================== Auth =======================
-
-		goddErr = api.LifeCycle.GetOnPreAuth()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		roleData, goddErr := api.LifeCycle.GetValidateAuth()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		goddErr = api.LifeCycle.GetValidateRole()(context, roleData)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		goddErr = api.LifeCycle.GetOnPostAuth()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		// ================== Validate Request =======================
-
-		goddErr = api.LifeCycle.GetValidateHeader()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		requestValidatedParam, goddErr := api.LifeCycle.GetValidateParam()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		requestValidatedQuery, goddErr := api.LifeCycle.GetValidateQuery()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		requestMappingBody, goddErr := api.LifeCycle.GetParseRequest()(context)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		requestValidatedBody, goddErr := api.LifeCycle.GetValidateRequest()(context, requestMappingBody)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		// ================== Handler =======================
-
-		requestValidatedBody, requestValidatedParam, requestValidatedQuery, goddErr = api.LifeCycle.GetOnPreHandler()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		code, responseRaw, responsePagination, goddErr := api.LifeCycle.GetHandlerLogic()(context, requestValidatedBody, requestValidatedParam, requestValidatedQuery)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		code, responseRaw, responsePagination, goddErr = api.LifeCycle.GetOnPostHandler()(context, code, responseRaw, responsePagination)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		// ================== Validate Response =======================
-
-		code, responseMapping, responsePagination, goddErr := api.LifeCycle.GetMappingResponse()(context, code, responseRaw, responsePagination)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		code, responseValidated, responsePagination, goddErr := api.LifeCycle.GetValidateResponse()(context, code, responseMapping, responsePagination)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		code, responseStandard, goddErr := api.LifeCycle.GetMappingResponseStandard()(context, code, responseValidated, responsePagination)
-		if goddErr != nil {
-			return encodeErrorHandler(context, goddErr)
-		}
-
-		code, responseStandard, goddErr = api.LifeCycle.GetOnPreResponse()(context, code, responseStandard)
+		code, responseStandard, goddErr := api.LifeCycle.RunLifeCycle(context)
 		if goddErr != nil {
 			return encodeErrorHandler(context, goddErr)
 		}
@@ -274,7 +182,6 @@ func (api *HTTP) HandlerLifeCycle() godd.Handler {
 		if goddErr != nil {
 			return encodeErrorHandler(context, goddErr)
 		}
-
 		// ================== Mdw =======================
 
 		if api.middleware.HandlerEndList != nil {
@@ -375,16 +282,7 @@ func handlerlifeCycleChecker(name string, api interface{}, mdw interface{}, setD
 //========================================
 
 func encodeErrorHandler(context godd.InterfaceContext, goddErr *godd.Error) error {
-	if goddErr.ErrorValidate != nil {
-		goddErr.Code = http.StatusBadRequest
-	}
 
-	var errorMessage string
-	if goddErr.Error != nil {
-		errorMessage = goddErr.Error.Error()
-	} else {
-		errorMessage = http.StatusText(goddErr.Code)
-	}
 	// errorreporting.LogError(errors.New(errorMessage))
 	context.SetContentType("application/json; charset=utf-8")
 
@@ -393,8 +291,8 @@ func encodeErrorHandler(context godd.InterfaceContext, goddErr *godd.Error) erro
 			Success: false,
 			Message: "unsuccess",
 			ResponseError: &godd.ResponseError{
-				Message:  errorMessage,
-				Validate: goddErr.ErrorValidate,
+				Message:  goddErr.GetMessage(),
+				Validate: goddErr.GetErrorValidate(),
 			},
 		},
 		goddErr.Code,
