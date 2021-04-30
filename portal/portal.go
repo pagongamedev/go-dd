@@ -55,13 +55,12 @@ func (pt *Portal) AppendApp(interfaceApp godd.InterfaceApp, port string) {
 
 func startAppGoroutine(app appServe, errc chan error) {
 	go func() {
-		var ch chan error
 		err := app.app.Listen(app.port)
 		if err != nil {
-			ch = errc
+			errc <- err
 		}
 		select {
-		case ch <- err:
+		case <-errc:
 			return
 		default:
 
@@ -89,7 +88,6 @@ func waitAppGoroutine(errc chan error, done chan bool, waitTimeForError int64) {
 		case done := <-done:
 			if done == true {
 				timeEnd = time.Now().Unix() + waitTimeForError
-				break
 			}
 		default:
 
