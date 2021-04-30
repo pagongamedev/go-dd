@@ -2,6 +2,9 @@ package portal
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	godd "github.com/pagongamedev/go-dd"
@@ -127,14 +130,17 @@ func (pt *Portal) deferClose() {
 }
 
 func (pt *Portal) checkInterruptQuit() {
-	// c := make(chan os.Signal)
-	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	// go func() {
-	// 	<-c
-	// 	pt.deferQuitApp()
-	// 	os.Exit(1)
-	// }()
+	go func() {
+		for sig := range c {
+			if sig != nil {
+				pt.deferQuitApp()
+				os.Exit(1)
+			}
+		}
+	}()
 }
 
 //=====================================
