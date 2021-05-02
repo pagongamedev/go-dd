@@ -108,7 +108,7 @@ func QueryOne(tx *sqlx.Tx, query string, argList []interface{}, responseStuct in
 		query,
 		argList...,
 	)
-	return GetRowOne(rows, err, &responseStuct)
+	return GetRowOne(rows, err, responseStuct)
 }
 
 func QueryFunc(tx *sqlx.Tx, query string, argList []interface{}, fnc func(r *sqlx.Rows) error) *godd.Error {
