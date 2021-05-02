@@ -1,7 +1,6 @@
 package godd
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -9,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/jmoiron/sqlx"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	defaults "github.com/pagongamedev/temp-go-defaults"
 	"golang.org/x/text/language"
@@ -242,93 +240,3 @@ func GetResponsePagination(requestPagination RequestPagination, totalCount int, 
 }
 
 //====================
-
-// Sqlx
-
-func SqlxQueryOne(rows *sqlx.Rows, err error, template interface{}) (interface{}, *Error) {
-	if err != nil || rows == nil {
-		return false, ErrorNew(http.StatusUnauthorized, err)
-	}
-	defer func() {
-		err := rows.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-
-	isFind := false
-	for rows.Next() {
-		isFind = true
-		err = rows.StructScan(template)
-		if err != nil {
-			return false, ErrorNew(http.StatusUnauthorized, err)
-		}
-	}
-	if !isFind {
-		return nil, nil
-	}
-
-	return template, nil
-}
-
-func SqlxQueryFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *Error {
-	if err != nil || rows == nil {
-		return ErrorNew(http.StatusUnauthorized, err)
-	}
-	defer func() {
-		err := rows.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-	for rows.Next() {
-
-		err = fnc(rows)
-		if err != nil {
-			return ErrorNew(http.StatusUnauthorized, err)
-		}
-	}
-
-	return nil
-}
-
-func SqlxAddValueCount(query string, iMax int) string {
-	str := ""
-
-	for i := 1; i <= iMax; i++ {
-		str += fmt.Sprintf("$%v", i)
-		if i != iMax {
-			str += ","
-		}
-	}
-	return strings.Replace(query, "{{Values}}", str, 1)
-}
-
-// func helperQueryMany(rows *sqlx.Rows, err error, dList interface{}, template interface{}) *godd.Error {
-// 	if err != nil || rows == nil {
-// 		return ErrorNew(http.StatusUnauthorized, err)
-// 	}
-// 	defer func() {
-// 		err := rows.Close()
-// 		if err != nil {
-// 			log.Println(err)
-// 		}
-// 	}()
-// 	vs := reflect.ValueOf(dList).Elem()
-// 	for rows.Next() {
-
-// 		a := reflect.ValueOf(dList).Elem()
-// 		fmt.Println("L ", a, a.Type(), a.Kind())
-
-// 		fmt.Println("A ", reflect.ValueOf(dList).Elem().Kind())
-
-// 		err = rows.StructScan(template)
-// 		if err != nil {
-// 			return ErrorNew(http.StatusUnauthorized, err)
-// 		}
-// 		vsNew := reflect.Append(vs, reflect.ValueOf(template).Elem())
-// 		vs.Set(vsNew)
-// 	}
-
-// 	return nil
-// }
