@@ -30,4 +30,4 @@ run:
 endif
 
 update-tag:
-	git tag ${tag} ; git push --tags
+	git tag v${tag} ; git push origin v${tag}
