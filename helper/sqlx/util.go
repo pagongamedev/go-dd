@@ -12,7 +12,7 @@ import (
 
 // Sqlx
 
-func SqlxGetRowOne(rows *sqlx.Rows, err error, template interface{}) (interface{}, *godd.Error) {
+func GetRowOne(rows *sqlx.Rows, err error, template interface{}) (interface{}, *godd.Error) {
 	if err != nil || rows == nil {
 		return false, godd.ErrorNew(http.StatusUnauthorized, err)
 	}
@@ -38,7 +38,7 @@ func SqlxGetRowOne(rows *sqlx.Rows, err error, template interface{}) (interface{
 	return template, nil
 }
 
-func SqlxGetRowFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *godd.Error {
+func GetRowFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *godd.Error {
 	if err != nil || rows == nil {
 		return godd.ErrorNew(http.StatusUnauthorized, err)
 	}
@@ -59,7 +59,7 @@ func SqlxGetRowFunc(rows *sqlx.Rows, err error, fnc func(r *sqlx.Rows) error) *g
 	return nil
 }
 
-func SqlxAddValueCount(query string, iMax int) string {
+func AddValueCount(query string, iMax int) string {
 	str := ""
 
 	for i := 1; i <= iMax; i++ {
@@ -102,20 +102,20 @@ func SqlxAddValueCount(query string, iMax int) string {
 
 // ==============================================
 
-func SqlxQueryOne(tx *sqlx.Tx, query string, argList []interface{}, responseStuct interface{}) (interface{}, *godd.Error) {
-	query = SqlxAddValueCount(query, len(argList))
+func QueryOne(tx *sqlx.Tx, query string, argList []interface{}, responseStuct interface{}) (interface{}, *godd.Error) {
+	query = AddValueCount(query, len(argList))
 	rows, err := tx.Queryx(
 		query,
 		argList...,
 	)
-	return SqlxGetRowOne(rows, err, &responseStuct)
+	return GetRowOne(rows, err, &responseStuct)
 }
 
-func SqlxQueryFunc(tx *sqlx.Tx, query string, argList []interface{}, fnc func(r *sqlx.Rows) error) *godd.Error {
-	query = SqlxAddValueCount(query, len(argList))
+func QueryFunc(tx *sqlx.Tx, query string, argList []interface{}, fnc func(r *sqlx.Rows) error) *godd.Error {
+	query = AddValueCount(query, len(argList))
 	rows, err := tx.Queryx(
 		query,
 		argList...,
 	)
-	return SqlxGetRowFunc(rows, err, fnc)
+	return GetRowFunc(rows, err, fnc)
 }
