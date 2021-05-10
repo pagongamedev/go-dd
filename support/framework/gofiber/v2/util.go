@@ -6,7 +6,7 @@ import (
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	godd "github.com/pagongamedev/go-dd"
-	"github.com/pagongamedev/go-dd/support/gofiber/v2/middleware"
+	"github.com/pagongamedev/go-dd/support/framework/gofiber/v2/middleware"
 )
 
 //=============== Gofiber ======================
