@@ -2,6 +2,7 @@ package v2
 
 import (
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	godd "github.com/pagongamedev/go-dd"
@@ -10,7 +11,7 @@ import (
 //==================== Interface App ====================
 
 func NewApp() (godd.InterfaceApp, *fiber.App) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{ReadTimeout: time.Second * 5})
 	goddApp := &AppGofiber{
 		app:       app,
 		framework: godd.FrameWorkGofiberV2,
