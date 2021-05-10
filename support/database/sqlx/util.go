@@ -71,6 +71,20 @@ func AddValueCount(query string, iMax int) string {
 	return strings.Replace(query, "{{Values}}", str, 1)
 }
 
+func IsRollbackByError(tx *sqlx.Tx, goddErr *godd.Error) bool {
+	return IsRollback(tx, goddErr != nil)
+}
+
+func IsRollback(tx *sqlx.Tx, isRollback bool) bool {
+	if isRollback {
+		err := tx.Rollback()
+		if err != nil {
+			log.Println("Rollback Error : ", err)
+		}
+	}
+	return isRollback
+}
+
 // func helperQueryMany(rows *sqlx.Rows, err error, dList interface{}, template interface{}) *godd.Error {
 // 	if err != nil || rows == nil {
 // 		return ErrorNew(http.StatusUnauthorized, err)
