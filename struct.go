@@ -132,6 +132,7 @@ type RequestSort struct {
 
 // ResponseDataList for Send Response Message to Encode Response
 type ResponseDataList struct {
+	Code               int                 `json:"code"                 swaggertype:"integer"`
 	Success            bool                `json:"success"              swaggertype:"boolean"`
 	Message            string              `json:"message"              swaggertype:"string"`
 	Data               interface{}         `json:"data,omitempty"       swaggertype:"object"`

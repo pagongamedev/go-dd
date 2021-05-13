@@ -10,8 +10,16 @@ import (
 
 //==================== Interface App ====================
 
-func NewApp() (godd.InterfaceApp, *fiber.App) {
-	app := fiber.New(fiber.Config{ReadTimeout: time.Second * 5})
+func NewApp(cfg ...fiber.Config) (godd.InterfaceApp, *fiber.App) {
+	var config fiber.Config
+
+	if len(cfg) > 0 {
+		config = cfg[0]
+	} else {
+		config = fiber.Config{ReadTimeout: time.Second * 5}
+	}
+
+	app := fiber.New(config)
 	goddApp := &AppGofiber{
 		app:       app,
 		framework: godd.FrameWorkGofiberV2,

@@ -319,6 +319,7 @@ func MappingStandard(code int, dataList interface{}, responsePagination *godd.Re
 		message = "unsuccess"
 	}
 	response = godd.ResponseDataList{
+		Code:               code,
 		Success:            isSuccess,
 		Message:            message,
 		Data:               dataList,
