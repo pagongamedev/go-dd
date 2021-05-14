@@ -15,7 +15,6 @@ type MicroService struct {
 // New API
 func New(interfaceApp godd.InterfaceApp, path string, context *godd.Context) *MicroService {
 	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
-
 	var http *HTTP
 
 	if interfaceApp.IsSupportHTTP() {
@@ -36,8 +35,18 @@ func New(interfaceApp godd.InterfaceApp, path string, context *godd.Context) *Mi
 // NewOne is New Microservice with Clear Middleware
 func (ms *MicroService) NewOne() *MicroService {
 	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
+	var http *HTTP
+
+	if ms.http != nil {
+		http = &HTTP{
+			http:          ms.http.http,
+			context:       ms.context,
+			apiMiddleware: apiMiddleware,
+		}
+	}
+
 	return &MicroService{
-		http:          ms.http,
+		http:          http,
 		context:       ms.context,
 		apiMiddleware: apiMiddleware,
 	}
