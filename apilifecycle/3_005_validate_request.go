@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ValidateRequest Type
-type ValidateRequest = func(context godd.InterfaceContext, requestMappingBody interface{}) (requestValidatedBody interface{}, goddErr *godd.Error)
+type ValidateRequest = func(context *godd.Context, requestMappingBody interface{}) (requestValidatedBody interface{}, goddErr *godd.Error)
 
 // ValidateRequest Set
 func (api *APILifeCycle) ValidateRequest(handler ValidateRequest) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetValidateRequest() ValidateRequest {
 
 // Handler Default
 func handlerDefaultValidateRequest() ValidateRequest {
-	return func(context godd.InterfaceContext, requestMapping interface{}) (requestValidated interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context, requestMapping interface{}) (requestValidated interface{}, goddErr *godd.Error) {
 		return requestMapping, nil
 	}
 }

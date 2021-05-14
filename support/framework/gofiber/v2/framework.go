@@ -190,7 +190,6 @@ func AdapterContextGofiber(ctx interface{}) godd.InterfaceContext {
 type ContextGofiber struct {
 	ctx       *fiber.Ctx
 	framework godd.FrameWork
-	context   *godd.Context
 }
 
 // GetFramework func
@@ -217,21 +216,6 @@ func (context *ContextGofiber) Response(responseDataList interface{}, contentTyp
 // Redirect func
 func (context *ContextGofiber) Redirect(location string, responseCode ...int) error {
 	return context.ctx.Redirect(location, responseCode...)
-}
-
-//========
-
-// SetContext func
-func (context *ContextGofiber) SetContext(ctx *godd.Context) {
-	if ctx.State == nil {
-		ctx.State = map[string]interface{}{}
-	}
-	context.context = ctx
-}
-
-// GetContext func
-func (context *ContextGofiber) GetContext() *godd.Context {
-	return context.context
 }
 
 //===========
@@ -297,16 +281,4 @@ func (context *ContextGofiber) ClearCookie(key ...string) {
 // Log func
 func (context *ContextGofiber) Log(v ...interface{}) {
 	log.Println(v...)
-}
-
-//===========
-
-// ValidateStruct func
-func (context *ContextGofiber) ValidateStruct(i interface{}, iType map[string]interface{}) *godd.Error {
-	return godd.ValidateStruct(context.context.GetI18N(), i, iType)
-}
-
-// SetDefaultStruct func
-func (context *ContextGofiber) SetDefaultStruct(i interface{}) interface{} {
-	return godd.SetDefaultStruct(i)
 }

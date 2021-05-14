@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ValidateParam Type
-type ValidateParam = func(context godd.InterfaceContext) (requestValidatedParam interface{}, goddErr *godd.Error)
+type ValidateParam = func(context *godd.Context) (requestValidatedParam interface{}, goddErr *godd.Error)
 
 // ValidateParam Set
 func (api *APILifeCycle) ValidateParam(handler ValidateParam) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetValidateParam() ValidateParam {
 
 // Handler Default
 func handlerDefaultValidateParam() ValidateParam {
-	return func(context godd.InterfaceContext) (requestValidatedParam interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context) (requestValidatedParam interface{}, goddErr *godd.Error) {
 		return nil, nil
 	}
 }

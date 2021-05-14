@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // HandlerLogic Type
-type HandlerLogic = func(context godd.InterfaceContext, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error)
+type HandlerLogic = func(context *godd.Context, requestValidatedBody interface{}, requestValidatedParam interface{}, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error)
 
 // HandlerLogic Set
 func (api *APILifeCycle) HandlerLogic(handler HandlerLogic) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetHandlerLogic() HandlerLogic {
 
 // Handler Default
 func handlerDefaultHandlerLogic() HandlerLogic {
-	return func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
+	return func(context *godd.Context, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
 		return 200, nil, nil, nil
 	}
 }

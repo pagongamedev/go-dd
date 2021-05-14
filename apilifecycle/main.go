@@ -92,14 +92,14 @@ func (apiLifeCycle *APILifeCycle) CheckerLifeCycle(apiMiddleware *APILifeCycle, 
 
 // =====================================================================
 // EncodeError Func
-type EncodeError = func(context godd.InterfaceContext, goddErr *godd.Error) (interface{}, error)
+type EncodeError = func(context *godd.Context, goddErr *godd.Error) (interface{}, error)
 
 // HandlerCycle Type
-type HandlerCycle = func(context godd.InterfaceContext) (goddErr *godd.Error)
+type HandlerCycle = func(context *godd.Context) (goddErr *godd.Error)
 
 // Handler Default
 func handlerDefaultCycle() HandlerCycle {
-	return func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	return func(context *godd.Context) (goddErr *godd.Error) {
 		return nil
 	}
 }

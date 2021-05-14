@@ -14,15 +14,15 @@ func (api *APILifeCycle) GetParseLanguage() HandlerCycle {
 
 // Handler Default
 func handlerDefaultParseLanguage() HandlerCycle {
-	return func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	return func(context *godd.Context) (goddErr *godd.Error) {
 
 		if context != nil {
-			acceptLanguage := context.GetHeader("Accept-Language")
+			acceptLanguage := context.App().GetHeader("Accept-Language")
 			if acceptLanguage == "" {
 				acceptLanguage = "en-US"
 			}
 
-			context.GetContext().SetLang(acceptLanguage)
+			context.SetLang(acceptLanguage)
 		}
 		return nil
 	}

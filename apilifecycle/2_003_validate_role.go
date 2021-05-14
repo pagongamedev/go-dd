@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ValidateRole Type
-type ValidateRole = func(context godd.InterfaceContext, roleData interface{}) (goddErr *godd.Error)
+type ValidateRole = func(context *godd.Context, roleData interface{}) (goddErr *godd.Error)
 
 // ValidateRole Set
 func (api *APILifeCycle) ValidateRole(handler ValidateRole) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetValidateRole() ValidateRole {
 
 // Handler Default
 func handlerDefaultValidateRole() ValidateRole {
-	return func(context godd.InterfaceContext, roleData interface{}) (goddErr *godd.Error) {
+	return func(context *godd.Context, roleData interface{}) (goddErr *godd.Error) {
 		return nil
 	}
 }

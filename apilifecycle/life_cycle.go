@@ -8,14 +8,14 @@ import (
 
 // ================== By Pass =======================
 
-func (api *APILifeCycle) HandlerLifeCycle(context godd.InterfaceContext, ctx *godd.Context) (*APIResponse, error) {
+func (api *APILifeCycle) HandlerLifeCycle(context *godd.Context) (*APIResponse, error) {
 	var err error
 
 	if api.byPass != nil {
-		return nil, api.byPass(context, ctx.Service, ctx.ServiceOptionList)
+		return nil, api.byPass(context)
 	}
 
-	code, response, goddErr := api.coreLifeCycle(context, ctx)
+	code, response, goddErr := api.coreLifeCycle(context)
 
 	if goddErr != nil {
 		code, response, goddErr = api.GetMappingStandardError()(goddErr)
@@ -31,15 +31,11 @@ func (api *APILifeCycle) HandlerLifeCycle(context godd.InterfaceContext, ctx *go
 	}, err
 }
 
-func (api *APILifeCycle) coreLifeCycle(context godd.InterfaceContext, ctx *godd.Context) (int, interface{}, *godd.Error) {
+func (api *APILifeCycle) coreLifeCycle(context *godd.Context) (int, interface{}, *godd.Error) {
 	var goddErr *godd.Error
 
-	if context != nil && ctx != nil {
-		context.SetContext(ctx)
-	}
-
-	if ctx != nil {
-		ctx.ClearState()
+	if context != nil {
+		context.ClearState()
 	}
 
 	// ================== Pre Start List =======================

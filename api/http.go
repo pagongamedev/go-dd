@@ -23,7 +23,7 @@ func HTTPMappingStandardError(goddErr *godd.Error) (codeOut int, responseError i
 }
 
 // HTTPMappingStandardResponse
-func HTTPMappingStandardResponse(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, goddErr *godd.Error) {
+func HTTPMappingStandardResponse(context *godd.Context, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, goddErr *godd.Error) {
 	if responseRaw == nil {
 		responseRaw = []string{}
 	}

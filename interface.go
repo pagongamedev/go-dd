@@ -38,9 +38,6 @@ type InterfaceContext interface {
 	Response(responseDataList interface{}, contentType string, responseCode ...int) error
 	Redirect(location string, responseCode ...int) error
 
-	SetContext(context *Context)
-	GetContext() *Context
-
 	SetContentType(str string)
 
 	SetHeader(key string, val string)
@@ -60,11 +57,6 @@ type InterfaceContext interface {
 	ClearCookie(key ...string)
 
 	Log(v ...interface{})
-
-	// ====== Validate Struct
-
-	ValidateStruct(i interface{}, iType map[string]interface{}) *Error
-	SetDefaultStruct(i interface{}) interface{}
 }
 
 // Get(path string, handlers ...Handler) Router

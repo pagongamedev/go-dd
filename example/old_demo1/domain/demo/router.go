@@ -31,32 +31,32 @@ func Router(app *fiber.App, path string) *goddMicroService.MicroService {
 
 func middlewareLogin(ms *goddMicroService.MicroService) *goddMicroService.MicroService {
 	msLogin := ms.NewOne()
-	msLogin.Override().ValidateAuth(func(context godd.InterfaceContext) (roleData interface{}, goddErr *godd.Error) {
+	msLogin.Override().ValidateAuth(func(context *godd.Context) (roleData interface{}, goddErr *godd.Error) {
 		log.Println("Hello")
 		return nil, nil
 	})
-	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnStart(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("Start : 1")
 	// 	return nil
 	// })
-	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnStart(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("Start : 2")
 	// 	return nil
 	// })
-	// msLogin.AppendMiddlewareOnStart(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnStart(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("Start : 3")
 	// 	return nil
 	// })
 
-	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnEnd(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("End : 1")
 	// 	return nil
 	// })
-	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnEnd(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("End : 2")
 	// 	return nil
 	// })
-	// msLogin.AppendMiddlewareOnEnd(func(context godd.InterfaceContext) (goddErr *godd.Error) {
+	// msLogin.AppendMiddlewareOnEnd(func(context *godd.Context) (goddErr *godd.Error) {
 	// 	log.Println("End : 3")
 	// 	return nil
 	// })

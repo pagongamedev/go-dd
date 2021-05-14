@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ValidateAuth Type
-type ValidateAuth = func(context godd.InterfaceContext) (roleData interface{}, goddErr *godd.Error)
+type ValidateAuth = func(context *godd.Context) (roleData interface{}, goddErr *godd.Error)
 
 // ValidateAuth Set
 func (api *APILifeCycle) ValidateAuth(handler ValidateAuth) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetValidateAuth() ValidateAuth {
 
 // Handler Default
 func handlerDefaultValidateAuth() ValidateAuth {
-	return func(context godd.InterfaceContext) (roleData interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context) (roleData interface{}, goddErr *godd.Error) {
 		return nil, nil
 	}
 }

@@ -12,11 +12,11 @@ import (
 func HandlerHello2() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
-	api.LifeCycle.ValidateAuth(func(context godd.InterfaceContext) (roleData interface{}, goddErr *godd.Error) {
+	api.LifeCycle.ValidateAuth(func(context *godd.Context) (roleData interface{}, goddErr *godd.Error) {
 		log.Println("API")
 		return nil, nil
 	})
-	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
+	api.LifeCycle.HandlerLogic(func(context *godd.Context, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
 		user := new(User)
 
 		if err := context.BodyParser(user); err != nil {

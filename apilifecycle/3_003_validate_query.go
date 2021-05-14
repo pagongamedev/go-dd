@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ValidateQuery Type
-type ValidateQuery = func(context godd.InterfaceContext) (requestValidatedQuery interface{}, goddErr *godd.Error)
+type ValidateQuery = func(context *godd.Context) (requestValidatedQuery interface{}, goddErr *godd.Error)
 
 // ValidateQuery Set
 func (api *APILifeCycle) ValidateQuery(handler ValidateQuery) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetValidateQuery() ValidateQuery {
 
 // Handler Default
 func handlerDefaultValidateQuery() ValidateQuery {
-	return func(context godd.InterfaceContext) (requestValidatedQuery interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context) (requestValidatedQuery interface{}, goddErr *godd.Error) {
 		return nil, nil
 	}
 }

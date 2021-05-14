@@ -51,34 +51,39 @@ const (
 // ==============================================================
 
 type Context struct {
-	Service           interface{}
-	ServiceOptionList map[string]interface{}
-	State             map[string]interface{}
-	I18n              *I18N
+	i                 InterfaceContext
+	service           interface{}
+	serviceOptionList map[string]interface{}
+	state             map[string]interface{}
+	i18n              *I18N
 }
 
-func NewContext(Service interface{}, ServiceOptionList map[string]interface{}, State map[string]interface{}, I18n *I18N) *Context {
+func NewContext(i InterfaceContext, service interface{}, serviceOptionList map[string]interface{}, state map[string]interface{}, i18n *I18N) *Context {
 
-	if ServiceOptionList == nil {
-		ServiceOptionList = map[string]interface{}{}
+	if serviceOptionList == nil {
+		serviceOptionList = map[string]interface{}{}
 	}
 
-	if State == nil {
-		State = map[string]interface{}{}
+	if state == nil {
+		state = map[string]interface{}{}
 	}
 
-	return &Context{Service, ServiceOptionList, State, I18n}
+	return &Context{i, service, serviceOptionList, state, i18n}
+}
+
+func (context *Context) App() InterfaceContext {
+	return context.i
 }
 
 // GetService func
 func (context *Context) GetService() interface{} {
-	return context.Service
+	return context.service
 }
 
 // GetServiceOptionList func
 func (context *Context) GetServiceOptionList(name string) interface{} {
-	if context.ServiceOptionList != nil {
-		return context.ServiceOptionList[name]
+	if context.serviceOptionList != nil {
+		return context.serviceOptionList[name]
 	}
 	log.Println("ServiceOptionList is null")
 	return nil
@@ -86,42 +91,54 @@ func (context *Context) GetServiceOptionList(name string) interface{} {
 
 // GetState func
 func (context *Context) GetState(name string) interface{} {
-	if context.State == nil {
-		context.State = map[string]interface{}{}
+	if context.state == nil {
+		context.state = map[string]interface{}{}
 	}
 
-	return context.State[name]
+	return context.state[name]
 }
 
 // SetState func
 func (context *Context) SetState(name string, value interface{}) {
-	if context.State == nil {
-		context.State = map[string]interface{}{}
+	if context.state == nil {
+		context.state = map[string]interface{}{}
 	}
 
-	context.State[name] = value
+	context.state[name] = value
 }
 
 // ClearState func
 func (context *Context) ClearState() {
-	context.State = map[string]interface{}{}
+	context.state = map[string]interface{}{}
 }
 
 // SetLang func
 func (context *Context) SetLang(lang string) {
-	if context.I18n != nil {
-		context.I18n.SetLang(lang)
+	if context.i18n != nil {
+		context.i18n.SetLang(lang)
 	}
 }
 
 // GetLang func
 func (context *Context) GetLang() string {
-	return context.I18n.GetLang()
+	return context.i18n.GetLang()
 }
 
 // GetI18N func
 func (context *Context) GetI18N() *I18N {
-	return context.I18n
+	return context.i18n
+}
+
+//===========
+
+// ValidateStruct func
+func (context *Context) ValidateStruct(i interface{}, iType map[string]interface{}) *Error {
+	return ValidateStruct(context.i18n, i, iType)
+}
+
+// SetDefaultStruct func
+func (context *Context) SetDefaultStruct(i interface{}) interface{} {
+	return SetDefaultStruct(i)
 }
 
 // ==============================================================

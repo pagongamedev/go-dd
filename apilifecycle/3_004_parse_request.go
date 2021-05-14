@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // ParseRequest Type
-type ParseRequest = func(context godd.InterfaceContext) (requestMappingBody interface{}, goddErr *godd.Error)
+type ParseRequest = func(context *godd.Context) (requestMappingBody interface{}, goddErr *godd.Error)
 
 // ParseRequest Set
 func (api *APILifeCycle) ParseRequest(handler ParseRequest) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetParseRequest() ParseRequest {
 
 // Handler Default
 func handlerDefaultParseRequest() ParseRequest {
-	return func(context godd.InterfaceContext) (requestMapping interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context) (requestMapping interface{}, goddErr *godd.Error) {
 		return nil, nil
 	}
 }

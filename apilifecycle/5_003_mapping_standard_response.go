@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // MappingStandardResponse Type
-type MappingStandardResponse = func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, goddErr *godd.Error)
+type MappingStandardResponse = func(context *godd.Context, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseMapping interface{}, goddErr *godd.Error)
 
 // MappingStandardResponse Set
 func (api *APILifeCycle) MappingStandardResponse(handler MappingStandardResponse) {
@@ -17,7 +17,7 @@ func (api *APILifeCycle) GetMappingStandardResponse() MappingStandardResponse {
 
 // Handler Default
 func handlerDefaultMappingStandardResponse() MappingStandardResponse {
-	return func(context godd.InterfaceContext, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseStandard interface{}, goddErr *godd.Error) {
+	return func(context *godd.Context, code int, responseRaw interface{}, responsePagination *godd.ResponsePagination) (codeOut int, responseStandard interface{}, goddErr *godd.Error) {
 		// response, goddErr := MappingStandard(code, responseRaw, responsePagination)
 		return code, responseRaw, goddErr
 	}

@@ -35,7 +35,7 @@ func Router(app *fiber.App, path string, service interface{}) *goddMicroService.
 func handlerHello() *goddAPI.HTTP {
 	api := goddAPI.NewAPIHTTP()
 
-	api.LifeCycle.HandlerLogic(func(context godd.InterfaceContext, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
+	api.LifeCycle.HandlerLogic(func(context *godd.Context, requestValidatedBody, requestValidatedParam, requestValidatedQuery interface{}) (code int, responseRaw interface{}, responsePagination *godd.ResponsePagination, goddErr *godd.Error) {
 		svc := context.GetService().(*service.DemoService)
 		response, err := svc.MessageRead("Hello Go-DD Repo Switcher")
 		return 200, godd.ConvertToArray(response), nil, err
