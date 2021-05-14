@@ -162,7 +162,7 @@ func (pt *Portal) deferQuitApp() {
 
 // addAPIGetHealth Func
 func addAPIGetHealth(app godd.InterfaceApp) {
-	app.Get("/health", handlerHealth())
+	app.Get("/health", nil, handlerHealth())
 }
 
 func handlerHealth() godd.Handler {

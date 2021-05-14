@@ -16,19 +16,19 @@ type InterfaceApp interface {
 	GetFrameworkApp() interface{}
 	Listen(port string) error
 	Shutdown() error
-	Get(path string, handlers ...Handler) InterfaceHTTP
-	Group(path string, handlers ...Handler) InterfaceHTTP
+	Get(path string, context *Context, handlers ...Handler) InterfaceHTTP
+	Group(path string, context *Context, handlers ...Handler) InterfaceHTTP
 	IsSupportHTTP() bool
 }
 
 // InterfaceHTTP interface
 type InterfaceHTTP interface {
-	Add(method string, path string, handlers ...func(context *Context) error)
-	Get(path string, handlers ...func(context *Context) error)
-	Post(path string, handlers ...func(context *Context) error)
-	Put(path string, handlers ...func(context *Context) error)
-	Patch(path string, handlers ...func(context *Context) error)
-	Delete(path string, handlers ...func(context *Context) error)
+	Add(method string, path string, context *Context, handlers ...func(context *Context) error)
+	Get(path string, context *Context, handlers ...func(context *Context) error)
+	Post(path string, context *Context, handlers ...func(context *Context) error)
+	Put(path string, context *Context, handlers ...func(context *Context) error)
+	Patch(path string, context *Context, handlers ...func(context *Context) error)
+	Delete(path string, context *Context, handlers ...func(context *Context) error)
 }
 
 // InterfaceContext interface

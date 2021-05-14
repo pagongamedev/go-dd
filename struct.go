@@ -71,6 +71,10 @@ func NewContext(i InterfaceContext, service interface{}, serviceOptionList map[s
 	return &Context{i, service, serviceOptionList, state, i18n}
 }
 
+func NewContextDefault() *Context {
+	return NewContext(nil, nil, nil, nil, nil)
+}
+
 func (context *Context) App() InterfaceContext {
 	return context.i
 }

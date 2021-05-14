@@ -15,35 +15,35 @@ type HTTP struct {
 // Add API
 func (msHTTP *HTTP) Add(method string, path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Add(method, path, api.HandlerLifeCycle())
+	msHTTP.http.Add(method, path, msHTTP.context, api.HandlerLifeCycle())
 }
 
 // Get API
 func (msHTTP *HTTP) Get(path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Get(path, api.HandlerLifeCycle())
+	msHTTP.http.Get(path, msHTTP.context, api.HandlerLifeCycle())
 }
 
 // Post API
 func (msHTTP *HTTP) Post(path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Post(path, api.HandlerLifeCycle())
+	msHTTP.http.Post(path, msHTTP.context, api.HandlerLifeCycle())
 }
 
 // Put API
 func (msHTTP *HTTP) Put(path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Put(path, api.HandlerLifeCycle())
+	msHTTP.http.Put(path, msHTTP.context, api.HandlerLifeCycle())
 }
 
 // Patch API
 func (msHTTP *HTTP) Patch(path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Patch(path, api.HandlerLifeCycle())
+	msHTTP.http.Patch(path, msHTTP.context, api.HandlerLifeCycle())
 }
 
 // Delete API
 func (msHTTP *HTTP) Delete(path string, api *goddAPI.API) {
 	api.Initial(msHTTP.context, msHTTP.apiMiddleware, goddAPI.HTTPMappingStandardResponse, goddAPI.HTTPMappingStandardError)
-	msHTTP.http.Delete(path, api.HandlerLifeCycle())
+	msHTTP.http.Delete(path, msHTTP.context, api.HandlerLifeCycle())
 }

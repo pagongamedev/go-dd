@@ -21,7 +21,7 @@ func New(interfaceApp godd.InterfaceApp, path string, service interface{}, servi
 
 	if interfaceApp.IsSupportHTTP() {
 		http = &HTTP{
-			http:          interfaceApp.Group(path),
+			http:          interfaceApp.Group(path, context),
 			context:       context,
 			apiMiddleware: apiMiddleware,
 		}
