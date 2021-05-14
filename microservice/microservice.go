@@ -2,90 +2,73 @@ package microservice
 
 import (
 	godd "github.com/pagongamedev/go-dd"
-	"github.com/pagongamedev/go-dd/api"
-	mdw "github.com/pagongamedev/go-dd/middleware"
+	goddAPILifeCycle "github.com/pagongamedev/go-dd/apilifecycle"
 )
 
 // MicroService Struct
 type MicroService struct {
-	router            godd.InterfaceRouter
-	service           interface{}
-	serviceOptionList map[string]interface{}
-	i18n              *godd.I18N
-	middleware        *mdw.Middleware
+	apiMiddleware *goddAPILifeCycle.APILifeCycle
+	context       *godd.Context
+	http          *HTTP
 }
 
 // New API
-func New(interfaceApp godd.InterfaceApp, path string, service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N) *MicroService {
+func New(interfaceApp godd.InterfaceApp, path string, context *godd.Context) *MicroService {
+	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
+	var http *HTTP
 
-	router := interfaceApp.Group(path)
-	return &MicroService{
-		router:            router,
-		service:           service,
-		serviceOptionList: serviceOptionList,
-		i18n:              i18n,
-		middleware:        &mdw.Middleware{LifeCycle: &godd.APILifeCycle{}},
+	if interfaceApp.IsSupportHTTP() {
+		http = &HTTP{
+			http:          interfaceApp.Group(path),
+			context:       context,
+			apiMiddleware: apiMiddleware,
+		}
 	}
-}
 
-// Add API
-func (ms *MicroService) Add(method string, path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Add(method, path, api.HandlerLifeCycle())
-}
-
-// Get API
-func (ms *MicroService) Get(path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Get(path, api.HandlerLifeCycle())
-}
-
-// Post API
-func (ms *MicroService) Post(path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Post(path, api.HandlerLifeCycle())
-}
-
-// Put API
-func (ms *MicroService) Put(path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Put(path, api.HandlerLifeCycle())
-}
-
-// Patch API
-func (ms *MicroService) Patch(path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Patch(path, api.HandlerLifeCycle())
-}
-
-// Delete API
-func (ms *MicroService) Delete(path string, api *api.HTTP) {
-	api.SetupHandlerHTTP(ms.service, ms.serviceOptionList, ms.i18n, ms.middleware)
-	ms.router.Delete(path, api.HandlerLifeCycle())
+	return &MicroService{
+		http:          http,
+		context:       context,
+		apiMiddleware: apiMiddleware,
+	}
 }
 
 // NewOne is New Microservice with Clear Middleware
 func (ms *MicroService) NewOne() *MicroService {
+	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
+	var http *HTTP
+
+	if ms.http != nil {
+		http = &HTTP{
+			http:          ms.http.http,
+			context:       ms.context,
+			apiMiddleware: apiMiddleware,
+		}
+	}
+
 	return &MicroService{
-		router:            ms.router,
-		service:           ms.service,
-		serviceOptionList: ms.serviceOptionList,
-		i18n:              ms.i18n,
-		middleware:        &mdw.Middleware{LifeCycle: &godd.APILifeCycle{}},
+		http:          http,
+		context:       ms.context,
+		apiMiddleware: apiMiddleware,
 	}
 }
 
 // Override Func API
-func (ms *MicroService) Override() *godd.APILifeCycle {
-	return ms.middleware.LifeCycle
+func (ms *MicroService) Override() *goddAPILifeCycle.APILifeCycle {
+	return ms.apiMiddleware
 }
 
-// AppendMiddlewareOnStart func
-func (ms *MicroService) AppendMiddlewareOnStart(handler godd.HandlerCycle) {
-	ms.middleware.HandlerStartList = append(ms.middleware.HandlerStartList, handler)
+// AppendMiddlewareStartList func
+func (ms *MicroService) AppendMiddlewareStartList(handler goddAPILifeCycle.HandlerCycle) {
+	ms.apiMiddleware.AppendMiddlewareStartList(handler)
 }
 
-// AppendMiddlewareOnEnd func
-func (ms *MicroService) AppendMiddlewareOnEnd(handler godd.HandlerCycle) {
-	ms.middleware.HandlerEndList = append(ms.middleware.HandlerEndList, handler)
+// AppendMiddlewareEndList func
+func (ms *MicroService) AppendMiddlewareEndList(handler goddAPILifeCycle.OnPreResponse) {
+	ms.apiMiddleware.AppendMiddlewareEndList(handler)
+}
+
+// ====================================================================================
+
+func (ms *MicroService) HTTP() *HTTP {
+	return ms.http
 }

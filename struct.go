@@ -2,6 +2,7 @@ package godd
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -46,6 +47,82 @@ const (
 	// EnvProduction Env
 	EnvProduction Env = "production"
 )
+
+// ==============================================================
+
+type Context struct {
+	Service           interface{}
+	ServiceOptionList map[string]interface{}
+	State             map[string]interface{}
+	I18n              *I18N
+}
+
+func NewContext(Service interface{}, ServiceOptionList map[string]interface{}, State map[string]interface{}, I18n *I18N) *Context {
+
+	if ServiceOptionList == nil {
+		ServiceOptionList = map[string]interface{}{}
+	}
+
+	if State == nil {
+		State = map[string]interface{}{}
+	}
+
+	return &Context{Service, ServiceOptionList, State, I18n}
+}
+
+// GetService func
+func (context *Context) GetService() interface{} {
+	return context.Service
+}
+
+// GetServiceOptionList func
+func (context *Context) GetServiceOptionList(name string) interface{} {
+	if context.ServiceOptionList != nil {
+		return context.ServiceOptionList[name]
+	}
+	log.Println("ServiceOptionList is null")
+	return nil
+}
+
+// GetState func
+func (context *Context) GetState(name string) interface{} {
+	if context.State == nil {
+		context.State = map[string]interface{}{}
+	}
+
+	return context.State[name]
+}
+
+// SetState func
+func (context *Context) SetState(name string, value interface{}) {
+	if context.State == nil {
+		context.State = map[string]interface{}{}
+	}
+
+	context.State[name] = value
+}
+
+// ClearState func
+func (context *Context) ClearState() {
+	context.State = map[string]interface{}{}
+}
+
+// SetLang func
+func (context *Context) SetLang(lang string) {
+	if context.I18n != nil {
+		context.I18n.SetLang(lang)
+	}
+}
+
+// GetLang func
+func (context *Context) GetLang() string {
+	return context.I18n.GetLang()
+}
+
+// GetI18N func
+func (context *Context) GetI18N() *I18N {
+	return context.I18n
+}
 
 // ==============================================================
 

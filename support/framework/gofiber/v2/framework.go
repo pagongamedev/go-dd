@@ -59,7 +59,7 @@ func (app *AppGofiber) Shutdown() error {
 }
 
 // Get func
-func (app *AppGofiber) Get(path string, handlers ...godd.Handler) godd.InterfaceRouter {
+func (app *AppGofiber) Get(path string, handlers ...godd.Handler) godd.InterfaceHTTP {
 	var h godd.Handler
 	var router fiber.Router
 	if len(handlers) > 0 {
@@ -68,7 +68,7 @@ func (app *AppGofiber) Get(path string, handlers ...godd.Handler) godd.Interface
 			return h(AdapterContextGofiber(ctx))
 		})
 	} else {
-		router = app.app.Group(path)
+		router = app.app.Get(path)
 	}
 
 	return &RouterGofiber{
@@ -78,7 +78,7 @@ func (app *AppGofiber) Get(path string, handlers ...godd.Handler) godd.Interface
 }
 
 // Group func
-func (app *AppGofiber) Group(path string, handlers ...godd.Handler) godd.InterfaceRouter {
+func (app *AppGofiber) Group(path string, handlers ...godd.Handler) godd.InterfaceHTTP {
 	var h godd.Handler
 	var router fiber.Router
 	if len(handlers) > 0 {
@@ -95,6 +95,13 @@ func (app *AppGofiber) Group(path string, handlers ...godd.Handler) godd.Interfa
 		framework: app.framework,
 	}
 }
+
+// =============================================================================
+func (app *AppGofiber) IsSupportHTTP() bool {
+	return true
+}
+
+// =============================================================================
 
 //==================== Interface Router ====================
 
@@ -181,12 +188,9 @@ func AdapterContextGofiber(ctx interface{}) godd.InterfaceContext {
 
 // ContextGofiber struct
 type ContextGofiber struct {
-	ctx               *fiber.Ctx
-	framework         godd.FrameWork
-	Service           interface{}
-	State             map[string]interface{}
-	ServiceOptionList map[string]interface{}
-	i18n              *godd.I18N
+	ctx       *fiber.Ctx
+	framework godd.FrameWork
+	context   *godd.Context
 }
 
 // GetFramework func
@@ -200,7 +204,10 @@ func (context *ContextGofiber) GetFrameworkContext() interface{} {
 }
 
 // Response func
-func (context *ContextGofiber) Response(responseDataList interface{}, responseCode ...int) error {
+func (context *ContextGofiber) Response(responseDataList interface{}, contentType string, responseCode ...int) error {
+	if contentType == "" {
+		context.ctx.Context().SetContentType(contentType)
+	}
 	if len(responseCode) > 0 {
 		context.ctx.Status(responseCode[0])
 	}
@@ -215,45 +222,16 @@ func (context *ContextGofiber) Redirect(location string, responseCode ...int) er
 //========
 
 // SetContext func
-func (context *ContextGofiber) SetContext(service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N, state map[string]interface{}) {
-	if state == nil {
-		state = map[string]interface{}{}
+func (context *ContextGofiber) SetContext(ctx *godd.Context) {
+	if ctx.State == nil {
+		ctx.State = map[string]interface{}{}
 	}
-	context.Service = service
-	context.ServiceOptionList = serviceOptionList
-	context.State = state
-	context.i18n = i18n
+	context.context = ctx
 }
 
-// GetService func
-func (context *ContextGofiber) GetService() interface{} {
-	return context.Service
-}
-
-// GetServiceOptionList func
-func (context *ContextGofiber) GetServiceOptionList(name string) interface{} {
-	if context.ServiceOptionList != nil {
-		return context.ServiceOptionList[name]
-	}
-	log.Println("ServiceOptionList is null")
-	return nil
-}
-
-// GetState func
-func (context *ContextGofiber) GetState(name string) interface{} {
-	if context.State != nil {
-		return context.State[name]
-	}
-	return nil
-}
-
-// SetState func
-func (context *ContextGofiber) SetState(name string, value interface{}) {
-	if context.State != nil {
-		context.State[name] = value
-	} else {
-		log.Println("State is null")
-	}
+// GetContext func
+func (context *ContextGofiber) GetContext() *godd.Context {
+	return context.context
 }
 
 //===========
@@ -323,26 +301,9 @@ func (context *ContextGofiber) Log(v ...interface{}) {
 
 //===========
 
-//SetLang func
-func (context *ContextGofiber) SetLang(lang string) {
-	if context.i18n != nil {
-		context.i18n.SetLang(lang)
-	}
-}
-
-//GetLang func
-func (context *ContextGofiber) GetLang() string {
-	return context.i18n.GetLang()
-}
-
-// GetI18N func
-func (context *ContextGofiber) GetI18N() *godd.I18N {
-	return context.i18n
-}
-
 // ValidateStruct func
 func (context *ContextGofiber) ValidateStruct(i interface{}, iType map[string]interface{}) *godd.Error {
-	return godd.ValidateStruct(context.i18n, i, iType)
+	return godd.ValidateStruct(context.context.GetI18N(), i, iType)
 }
 
 // SetDefaultStruct func
