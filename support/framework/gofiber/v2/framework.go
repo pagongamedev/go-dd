@@ -96,6 +96,13 @@ func (app *AppGofiber) Group(path string, handlers ...godd.Handler) godd.Interfa
 	}
 }
 
+// =============================================================================
+func (app *AppGofiber) IsSupportHTTP() bool {
+	return true
+}
+
+// =============================================================================
+
 //==================== Interface Router ====================
 
 // RouterGofiber struct
@@ -175,7 +182,7 @@ func (router *RouterGofiber) Delete(path string, handlers ...func(ctx godd.Inter
 // AdapterContextGofiber Func
 func AdapterContextGofiber(ctx interface{}) godd.InterfaceContext {
 	return &ContextGofiber{
-		ctx: ctx.(*fiber.Ctx)
+		ctx: ctx.(*fiber.Ctx),
 	}
 }
 
@@ -197,7 +204,10 @@ func (context *ContextGofiber) GetFrameworkContext() interface{} {
 }
 
 // Response func
-func (context *ContextGofiber) Response(responseDataList interface{}, responseCode ...int) error {
+func (context *ContextGofiber) Response(responseDataList interface{}, contentType string, responseCode ...int) error {
+	if contentType == "" {
+		context.ctx.Context().SetContentType(contentType)
+	}
 	if len(responseCode) > 0 {
 		context.ctx.Status(responseCode[0])
 	}
@@ -217,6 +227,11 @@ func (context *ContextGofiber) SetContext(ctx *godd.Context) {
 		ctx.State = map[string]interface{}{}
 	}
 	context.context = ctx
+}
+
+// GetContext func
+func (context *ContextGofiber) GetContext() *godd.Context {
+	return context.context
 }
 
 //===========

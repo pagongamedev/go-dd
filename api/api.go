@@ -28,21 +28,11 @@ func (api *API) SetupHandler(context *godd.Context, apiMiddleware *goddAPILifeCy
 // HandlerLifeCycle func
 func (api *API) HandlerLifeCycle() godd.Handler {
 	return func(context godd.InterfaceContext) error {
-		var goddErr *godd.Error
-		context.SetContext(api.service, api.serviceOptionList, api.i18n, map[string]interface{}{})
-
-		// ==================== Start =====================
-		apiResponse, err := api.LifeCycle.HandlerLifeCycle(context, api.service, api.serviceOptionList)
+		apiResponse, err := api.LifeCycle.HandlerLifeCycle(context, api.context)
 		if err != nil {
 			return err
 		}
 
-		goddErr = api.LifeCycle.GetSendResponse()(context, apiResponse.Code, apiResponse.Response)
-		if goddErr != nil {
-			fmt.p
-		}
-		// ================================================
-
-		return nil
+		return api.LifeCycle.GetSendResponse()(context, apiResponse.Code, apiResponse.Response)
 	}
 }

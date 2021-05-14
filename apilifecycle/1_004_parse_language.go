@@ -22,7 +22,7 @@ func handlerDefaultParseLanguage() HandlerCycle {
 				acceptLanguage = "en-US"
 			}
 
-			context.SetLang(acceptLanguage)
+			context.GetContext().SetLang(acceptLanguage)
 		}
 		return nil
 	}

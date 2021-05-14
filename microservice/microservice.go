@@ -54,4 +54,5 @@ func (ms *MicroService) HTTP() error {
 	if ms.context.IsSupportHTTP() {
 
 	}
+	return nil
 }

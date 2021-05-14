@@ -35,14 +35,11 @@ type InterfaceHTTP interface {
 type InterfaceContext interface {
 	GetFramework() FrameWork
 	GetFrameworkContext() interface{}
-	Response(responseDataList interface{}, responseCode ...int) error
+	Response(responseDataList interface{}, contentType string, responseCode ...int) error
 	Redirect(location string, responseCode ...int) error
 
-	SetContext(service interface{}, serviceOptionList map[string]interface{}, i18n *I18N, state map[string]interface{})
-	GetService() interface{}
-	GetServiceOptionList(name string) interface{}
-	GetState(name string) interface{}
-	SetState(name string, value interface{})
+	SetContext(context *Context)
+	GetContext() *Context
 
 	SetContentType(str string)
 
@@ -63,12 +60,6 @@ type InterfaceContext interface {
 	ClearCookie(key ...string)
 
 	Log(v ...interface{})
-
-	// ========== i18n
-
-	SetLang(lang string)
-	GetLang() string
-	GetI18N() *I18N
 
 	// ====== Validate Struct
 

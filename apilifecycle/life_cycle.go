@@ -29,6 +29,14 @@ func (api *APILifeCycle) HandlerLifeCycle(context godd.InterfaceContext, ctx *go
 func (api *APILifeCycle) runLifeCycle(context godd.InterfaceContext, ctx *godd.Context) (int, interface{}, *godd.Error) {
 	var goddErr *godd.Error
 
+	if context != nil && ctx != nil {
+		context.SetContext(ctx)
+	}
+
+	if ctx != nil {
+		ctx.ClearState()
+	}
+
 	// ================== Pre Start List =======================
 
 	goddErr = api.GetOnPreStartList()(context)
