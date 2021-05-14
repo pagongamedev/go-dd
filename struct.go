@@ -22,7 +22,7 @@ type DeferClose struct {
 type FuncEnvironment = func(secret MapString) (*Map, *[]DeferClose)
 
 // Handler type
-type Handler func(InterfaceContext) error
+type Handler func(*Context) error
 
 // FrameWork type
 type FrameWork string

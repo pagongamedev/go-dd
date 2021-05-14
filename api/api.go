@@ -28,7 +28,7 @@ func (api *API) SetupHandler(context *godd.Context, apiMiddleware *goddAPILifeCy
 // HandlerLifeCycle func
 func (api *API) HandlerLifeCycle() godd.Handler {
 	return func(context *godd.Context) error {
-		apiResponse, err := api.LifeCycle.HandlerLifeCycle(context, api.context)
+		apiResponse, err := api.LifeCycle.HandlerLifeCycle(context)
 		if err != nil {
 			return err
 		}
