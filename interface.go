@@ -16,12 +16,13 @@ type InterfaceApp interface {
 	GetFrameworkApp() interface{}
 	Listen(port string) error
 	Shutdown() error
-	Get(path string, handlers ...Handler) InterfaceRouter
-	Group(path string, handlers ...Handler) InterfaceRouter
+	Get(path string, handlers ...Handler) InterfaceHTTP
+	Group(path string, handlers ...Handler) InterfaceHTTP
+	IsSupportHTTP() bool
 }
 
-// InterfaceRouter interface
-type InterfaceRouter interface {
+// InterfaceHTTP interface
+type InterfaceHTTP interface {
 	Add(method string, path string, handlers ...func(ctx InterfaceContext) error)
 	Get(path string, handlers ...func(ctx InterfaceContext) error)
 	Post(path string, handlers ...func(ctx InterfaceContext) error)
