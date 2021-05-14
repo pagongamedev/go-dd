@@ -16,8 +16,15 @@ func New() *API {
 	return &API{LifeCycle: &goddAPILifeCycle.APILifeCycle{}}
 }
 
-// SetupHandler API
-func (api *API) SetupHandler(context *godd.Context, apiMiddleware *goddAPILifeCycle.APILifeCycle, mappingStandardResponse goddAPILifeCycle.MappingStandardResponse, mappingStandardError goddAPILifeCycle.MappingStandardError) {
+func NewWithContext(service interface{}, serviceOptionList map[string]interface{}, state map[string]interface{}, i18n *godd.I18N) *API {
+	return &API{
+		LifeCycle: &goddAPILifeCycle.APILifeCycle{},
+		context:   godd.NewContext(nil, service, serviceOptionList, state, i18n),
+	}
+}
+
+// Initial API
+func (api *API) Initial(context *godd.Context, apiMiddleware *goddAPILifeCycle.APILifeCycle, mappingStandardResponse goddAPILifeCycle.MappingStandardResponse, mappingStandardError goddAPILifeCycle.MappingStandardError) {
 	api.context = context
 	api.apiMiddleware = apiMiddleware
 	api.LifeCycle.CheckerLifeCycle(apiMiddleware, mappingStandardResponse, mappingStandardError)

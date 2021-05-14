@@ -166,7 +166,7 @@ func addAPIGetHealth(app godd.InterfaceApp) {
 }
 
 func handlerHealth() godd.Handler {
-	return func(ctx godd.InterfaceContext) error {
-		return ctx.Response(godd.Map{"success": true}, "")
+	return func(context *godd.Context) error {
+		return context.App().Response(godd.Map{"success": true}, "")
 	}
 }

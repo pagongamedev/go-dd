@@ -23,12 +23,12 @@ type InterfaceApp interface {
 
 // InterfaceHTTP interface
 type InterfaceHTTP interface {
-	Add(method string, path string, handlers ...func(ctx InterfaceContext) error)
-	Get(path string, handlers ...func(ctx InterfaceContext) error)
-	Post(path string, handlers ...func(ctx InterfaceContext) error)
-	Put(path string, handlers ...func(ctx InterfaceContext) error)
-	Patch(path string, handlers ...func(ctx InterfaceContext) error)
-	Delete(path string, handlers ...func(ctx InterfaceContext) error)
+	Add(method string, path string, handlers ...func(context *Context) error)
+	Get(path string, handlers ...func(context *Context) error)
+	Post(path string, handlers ...func(context *Context) error)
+	Put(path string, handlers ...func(context *Context) error)
+	Patch(path string, handlers ...func(context *Context) error)
+	Delete(path string, handlers ...func(context *Context) error)
 }
 
 // InterfaceContext interface
