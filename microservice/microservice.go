@@ -9,27 +9,37 @@ import (
 type MicroService struct {
 	apiMiddleware *goddAPILifeCycle.APILifeCycle
 	context       *godd.Context
-	http          HTTP
+	http          *HTTP
 }
 
 // New API
 func New(interfaceApp godd.InterfaceApp, path string, context *godd.Context) *MicroService {
+	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
 
-	http := interfaceApp.Group(path)
+	var http *HTTP
+
+	if interfaceApp.IsSupportHTTP() {
+		http = &HTTP{
+			http:          interfaceApp.Group(path),
+			context:       context,
+			apiMiddleware: apiMiddleware,
+		}
+	}
 
 	return &MicroService{
 		http:          http,
 		context:       context,
-		apiMiddleware: &goddAPILifeCycle.APILifeCycle{},
+		apiMiddleware: apiMiddleware,
 	}
 }
 
 // NewOne is New Microservice with Clear Middleware
 func (ms *MicroService) NewOne() *MicroService {
+	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
 	return &MicroService{
 		http:          ms.http,
 		context:       ms.context,
-		apiMiddleware: &goddAPILifeCycle.APILifeCycle{},
+		apiMiddleware: apiMiddleware,
 	}
 }
 
@@ -50,9 +60,6 @@ func (ms *MicroService) AppendMiddlewareEndList(handler goddAPILifeCycle.OnPreRe
 
 // ====================================================================================
 
-func (ms *MicroService) HTTP() error {
-	if ms.context.IsSupportHTTP() {
-
-	}
-	return nil
+func (ms *MicroService) HTTP() *HTTP {
+	return ms.http
 }
