@@ -1,6 +1,10 @@
 package apilifecycle
 
-import godd "github.com/pagongamedev/go-dd"
+import (
+	"log"
+
+	godd "github.com/pagongamedev/go-dd"
+)
 
 // ================== By Pass =======================
 
@@ -11,12 +15,13 @@ func (api *APILifeCycle) HandlerLifeCycle(context godd.InterfaceContext, ctx *go
 		return nil, api.byPass(context, ctx.Service, ctx.ServiceOptionList)
 	}
 
-	code, response, goddErr := api.runLifeCycle(context, ctx)
+	code, response, goddErr := api.coreLifeCycle(context, ctx)
 
 	if goddErr != nil {
 		code, response, goddErr = api.GetMappingStandardError()(goddErr)
 		if goddErr != nil && goddErr.Error != nil {
 			err = goddErr.Error
+			log.Println(err)
 		}
 	}
 
@@ -26,7 +31,7 @@ func (api *APILifeCycle) HandlerLifeCycle(context godd.InterfaceContext, ctx *go
 	}, err
 }
 
-func (api *APILifeCycle) runLifeCycle(context godd.InterfaceContext, ctx *godd.Context) (int, interface{}, *godd.Error) {
+func (api *APILifeCycle) coreLifeCycle(context godd.InterfaceContext, ctx *godd.Context) (int, interface{}, *godd.Error) {
 	var goddErr *godd.Error
 
 	if context != nil && ctx != nil {
