@@ -13,9 +13,11 @@ type MicroService struct {
 }
 
 // New API
-func New(interfaceApp godd.InterfaceApp, path string, context *godd.Context) *MicroService {
+func New(interfaceApp godd.InterfaceApp, path string, service interface{}, serviceOptionList map[string]interface{}, i18n *godd.I18N) *MicroService {
 	apiMiddleware := &goddAPILifeCycle.APILifeCycle{}
 	var http *HTTP
+
+	context := godd.NewContext(nil, service, serviceOptionList, nil, i18n)
 
 	if interfaceApp.IsSupportHTTP() {
 		http = &HTTP{
