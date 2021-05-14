@@ -83,7 +83,7 @@ func (apiLifeCycle *APILifeCycle) CheckerLifeCycle(apiMiddleware *APILifeCycle, 
 	apiLifeCycle.ValidateResponse(checkerLifeCycleHandler("ValidateResponse", apiLifeCycle.GetValidateResponse(), apiMiddleware.GetValidateResponse(), handlerDefaultValidateResponse()).(ValidateResponse))
 	apiLifeCycle.MappingStandardResponse(checkerLifeCycleHandler("MappingStandardResponse", apiLifeCycle.GetMappingStandardResponse(), apiMiddleware.GetMappingStandardResponse(), mappingStandardResponse).(MappingStandardResponse))
 
-	apiLifeCycle.OnPreEndList(checkerLifeCycleHandler("OnPreEndList", apiLifeCycle.GetOnPreEndList(), apiMiddleware.GetOnPreEndList(), handlerDefaultCycle()).(OnPreResponse))
+	apiLifeCycle.OnPreEndList(checkerLifeCycleHandler("OnPreEndList", apiLifeCycle.GetOnPreEndList(), apiMiddleware.GetOnPreEndList(), handlerDefaultOnPreResponse()).(OnPreResponse))
 	// MiddlewareEndList
 	apiLifeCycle.OnPreResponse(checkerLifeCycleHandler("OnPreResponse", apiLifeCycle.GetOnPreResponse(), apiMiddleware.GetOnPreResponse(), handlerDefaultOnPreResponse()).(OnPreResponse))
 
