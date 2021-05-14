@@ -54,7 +54,20 @@ type Context struct {
 	Service           interface{}
 	ServiceOptionList map[string]interface{}
 	State             map[string]interface{}
-	i18n              *I18N
+	I18n              *I18N
+}
+
+func NewContext(Service interface{}, ServiceOptionList map[string]interface{}, State map[string]interface{}, I18n *I18N) *Context {
+
+	if ServiceOptionList == nil {
+		ServiceOptionList = map[string]interface{}{}
+	}
+
+	if State == nil {
+		State = map[string]interface{}{}
+	}
+
+	return &Context{Service, ServiceOptionList, State, I18n}
 }
 
 // GetService func
@@ -96,19 +109,19 @@ func (context *Context) ClearState() {
 
 // SetLang func
 func (context *Context) SetLang(lang string) {
-	if context.i18n != nil {
-		context.i18n.SetLang(lang)
+	if context.I18n != nil {
+		context.I18n.SetLang(lang)
 	}
 }
 
 // GetLang func
 func (context *Context) GetLang() string {
-	return context.i18n.GetLang()
+	return context.I18n.GetLang()
 }
 
 // GetI18N func
 func (context *Context) GetI18N() *I18N {
-	return context.i18n
+	return context.I18n
 }
 
 // ==============================================================
