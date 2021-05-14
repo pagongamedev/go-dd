@@ -75,6 +75,10 @@ func (context *Context) App() InterfaceContext {
 	return context.i
 }
 
+func (context *Context) SetApp(i InterfaceContext) {
+	context.i = i
+}
+
 // GetService func
 func (context *Context) GetService() interface{} {
 	return context.service

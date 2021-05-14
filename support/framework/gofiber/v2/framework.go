@@ -112,7 +112,7 @@ type RouterGofiber struct {
 }
 
 // Add func
-func (router *RouterGofiber) Add(method string, path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Add(method string, path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
@@ -123,18 +123,19 @@ func (router *RouterGofiber) Add(method string, path string, handlers ...func(ct
 }
 
 // Get func
-func (router *RouterGofiber) Get(path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Get(path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
 		(*router.router).Get(path, func(ctx *fiber.Ctx) error {
+
 			return h(AdapterContextGofiber(ctx))
 		})
 	}
 }
 
 // Post func
-func (router *RouterGofiber) Post(path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Post(path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
@@ -145,7 +146,7 @@ func (router *RouterGofiber) Post(path string, handlers ...func(ctx godd.Interfa
 }
 
 // Put func
-func (router *RouterGofiber) Put(path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Put(path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
@@ -156,7 +157,7 @@ func (router *RouterGofiber) Put(path string, handlers ...func(ctx godd.Interfac
 }
 
 // Patch func
-func (router *RouterGofiber) Patch(path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Patch(path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
@@ -167,7 +168,7 @@ func (router *RouterGofiber) Patch(path string, handlers ...func(ctx godd.Interf
 }
 
 // Delete func
-func (router *RouterGofiber) Delete(path string, handlers ...func(ctx godd.InterfaceContext) error) {
+func (router *RouterGofiber) Delete(path string, handlers ...func(context *godd.Context) error) {
 	var h godd.Handler
 	if len(handlers) > 0 {
 		h = handlers[0]
@@ -180,10 +181,13 @@ func (router *RouterGofiber) Delete(path string, handlers ...func(ctx godd.Inter
 //==================== Interface Context ====================
 
 // AdapterContextGofiber Func
-func AdapterContextGofiber(ctx interface{}) godd.InterfaceContext {
-	return &ContextGofiber{
-		ctx: ctx.(*fiber.Ctx),
+func AdapterContextGofiber(ctx interface{}) *godd.Context {
+
+	i := &ContextGofiber{
+		ctx:       ctx.(*fiber.Ctx),
+		framework: godd.FrameWorkGofiberV2,
 	}
+	return godd.NewContext(i, nil, nil, nil, nil)
 }
 
 // ContextGofiber struct
