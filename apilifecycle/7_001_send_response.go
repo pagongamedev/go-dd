@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // SendResponse Type
-type SendResponse = func(context *godd.Context, code int, requestValidated interface{}) (err error)
+type SendResponse = func(context *godd.Context, code int, responseStandard interface{}) (err error)
 
 // SendResponse Set
 func (api *APILifeCycle) SendResponse(handler SendResponse) {

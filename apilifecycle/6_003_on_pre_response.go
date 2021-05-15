@@ -3,7 +3,7 @@ package apilifecycle
 import godd "github.com/pagongamedev/go-dd"
 
 // OnPreResponse Type
-type OnPreResponse = func(context *godd.Context, code int, requestValidatedIn interface{}) (codeOut int, requestValidatedOut interface{}, goddErr *godd.Error)
+type OnPreResponse = func(context *godd.Context, code int, responseStandard interface{}) (codeOut int, responseStandardOut interface{}, goddErr *godd.Error)
 
 // OnPreResponse Set
 func (api *APILifeCycle) OnPreResponse(handler OnPreResponse) {
