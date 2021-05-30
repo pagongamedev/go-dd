@@ -32,9 +32,14 @@ type AppGofiber struct {
 	framework godd.FrameWork
 }
 
-// GetFramework func
+// App func
 func (app *AppGofiber) App() interface{} {
 	return &app.app
+}
+
+// SetApp func
+func (app *AppGofiber) SetApp(newApp interface{}) {
+	app.app = newApp.(*fiber.App)
 }
 
 // GetFramework func

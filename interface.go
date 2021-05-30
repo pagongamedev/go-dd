@@ -13,6 +13,7 @@ type InterfaceClose interface {
 type InterfaceApp interface {
 	GetFramework() FrameWork
 	App() interface{}
+	SetApp(interface{})
 	Listen(port string) error
 	Shutdown() error
 	Get(path string, context *Context, handlers ...Handler) InterfaceHTTP

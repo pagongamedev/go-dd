@@ -25,9 +25,14 @@ type AppNetHTTP struct {
 	framework godd.FrameWork
 }
 
-// GetFramework func
+// App func
 func (app *AppNetHTTP) App() interface{} {
 	return app.app
+}
+
+// SetApp func
+func (app *AppNetHTTP) SetApp(newApp interface{}) {
+	app.app = newApp.(*http.ServeMux)
 }
 
 // GetFramework func
@@ -57,6 +62,7 @@ func (app *AppNetHTTP) Get(path string, context *godd.Context, handlers ...godd.
 
 // Group func
 func (app *AppNetHTTP) Group(path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
+	// app.Handle("/payment/v1/", http.StripPrefix("/payment/v1", payment.MakeHandler(paymentService)))
 	return app.route("group", path, context, handlers...)
 }
 
