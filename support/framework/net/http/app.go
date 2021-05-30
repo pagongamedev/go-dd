@@ -41,8 +41,15 @@ func (app *AppNetHTTP) GetFramework() godd.FrameWork {
 }
 
 // Listen func
-func (app *AppNetHTTP) Listen(port string) error {
-	app.server = &http.Server{Addr: ":" + port, Handler: app.app}
+func (app *AppNetHTTP) Listen(port string, extraList ...interface{}) error {
+	var handle http.Handler
+	handle = app.app
+
+	if len(extraList) > 0 {
+		handle = extraList[0].(http.Handler)
+	}
+
+	app.server = &http.Server{Addr: ":" + port, Handler: handle}
 	return app.server.ListenAndServe()
 }
 
@@ -56,24 +63,24 @@ func (app *AppNetHTTP) Shutdown() error {
 }
 
 // Get func
-func (app *AppNetHTTP) Get(path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
-	return app.route("get", path, context, handlers...)
+func (app *AppNetHTTP) Get(path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
+	return app.route("get", path, context, handleList...)
 }
 
 // Group func
-func (app *AppNetHTTP) Group(path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
+func (app *AppNetHTTP) Group(path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
 	// app.Handle("/payment/v1/", http.StripPrefix("/payment/v1", payment.MakeHandler(paymentService)))
-	return app.route("group", path, context, handlers...)
+	return app.route("group", path, context, handleList...)
 }
 
-func (app *AppNetHTTP) route(routeType string, path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
+func (app *AppNetHTTP) route(routeType string, path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
 	// var h godd.Handler
 	// // var router fiber.Router
 	// var routeFunc func(ctx *fiber.Ctx) error
 
 	// routeFunc = nil
-	// if len(handlers) > 0 {
-	// 	h = handlers[0]
+	// if len(handleList) > 0 {
+	// 	h = handleList[0]
 	// 	Handler
 	// 	routeFunc = func(ctx *fiber.Ctx) error {
 	// 		return h(AdapterContextGofiber(context, ctx))

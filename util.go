@@ -87,6 +87,15 @@ func SetDefaultStruct(variable interface{}) interface{} {
 
 // =========================================
 
+func GetOneFromArray(list ...interface{}) interface{} {
+	if len(list) > 0 {
+		return list[0]
+	}
+	return nil
+}
+
+// =========================================
+
 // I18N func
 type I18N struct {
 	bundle        *i18n.Bundle

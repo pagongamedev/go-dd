@@ -38,24 +38,26 @@ func New(secret *godd.MapString, funcStorage godd.FuncEnvironment, funcMiddlewar
 }
 
 type appServe struct {
-	app  godd.InterfaceApp
-	port string
+	app       godd.InterfaceApp
+	port      string
+	extraList []interface{}
 }
 
 // AppendApp Func
-func (pt *Portal) AppendApp(interfaceApp godd.InterfaceApp, port string) {
+func (pt *Portal) AppendApp(interfaceApp godd.InterfaceApp, port string, extraList ...interface{}) {
 
 	addAPIGetHealth(interfaceApp)
 
 	pt.appList = append(pt.appList, appServe{
-		app:  interfaceApp,
-		port: port,
+		app:       interfaceApp,
+		port:      port,
+		extraList: extraList,
 	})
 }
 
 func startAppGoroutine(app appServe, errc chan error) {
 	go func() {
-		err := app.app.Listen(app.port)
+		err := app.app.Listen(app.port, app.extraList...)
 		if err != nil {
 			errc <- err
 		}

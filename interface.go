@@ -14,10 +14,10 @@ type InterfaceApp interface {
 	GetFramework() FrameWork
 	App() interface{}
 	SetApp(interface{})
-	Listen(port string) error
+	Listen(port string, extraList ...interface{}) error
 	Shutdown() error
-	Get(path string, context *Context, handlers ...Handler) InterfaceHTTP
-	Group(path string, context *Context, handlers ...Handler) InterfaceHTTP
+	Get(path string, context *Context, handleList ...Handler) InterfaceHTTP
+	Group(path string, context *Context, handleList ...Handler) InterfaceHTTP
 	IsSupportHTTP() bool
 }
 
@@ -25,12 +25,12 @@ type InterfaceApp interface {
 
 // InterfaceHTTP interface
 type InterfaceHTTP interface {
-	Add(method string, path string, context *Context, handlers ...func(context *Context) error)
-	Get(path string, context *Context, handlers ...func(context *Context) error)
-	Post(path string, context *Context, handlers ...func(context *Context) error)
-	Put(path string, context *Context, handlers ...func(context *Context) error)
-	Patch(path string, context *Context, handlers ...func(context *Context) error)
-	Delete(path string, context *Context, handlers ...func(context *Context) error)
+	Add(method string, path string, context *Context, handleList ...func(context *Context) error)
+	Get(path string, context *Context, handleList ...func(context *Context) error)
+	Post(path string, context *Context, handleList ...func(context *Context) error)
+	Put(path string, context *Context, handleList ...func(context *Context) error)
+	Patch(path string, context *Context, handleList ...func(context *Context) error)
+	Delete(path string, context *Context, handleList ...func(context *Context) error)
 }
 
 //==================================
@@ -69,6 +69,6 @@ type InterfaceContext interface {
 	Log(v ...interface{})
 }
 
-// Get(path string, handlers ...Handler) Router
+// Get(path string, handleList ...Handler) Router
 
 //==================================

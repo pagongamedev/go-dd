@@ -48,7 +48,7 @@ func (app *AppGofiber) GetFramework() godd.FrameWork {
 }
 
 // Listen func
-func (app *AppGofiber) Listen(port string) error {
+func (app *AppGofiber) Listen(port string, extraList ...interface{}) error {
 	return app.app.Listen(port)
 }
 
@@ -58,23 +58,23 @@ func (app *AppGofiber) Shutdown() error {
 }
 
 // Get func
-func (app *AppGofiber) Get(path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
-	return app.route("get", path, context, handlers...)
+func (app *AppGofiber) Get(path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
+	return app.route("get", path, context, handleList...)
 }
 
 // Group func
-func (app *AppGofiber) Group(path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
-	return app.route("group", path, context, handlers...)
+func (app *AppGofiber) Group(path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
+	return app.route("group", path, context, handleList...)
 }
 
-func (app *AppGofiber) route(routeType string, path string, context *godd.Context, handlers ...godd.Handler) godd.InterfaceHTTP {
+func (app *AppGofiber) route(routeType string, path string, context *godd.Context, handleList ...godd.Handler) godd.InterfaceHTTP {
 	var h godd.Handler
 	var router fiber.Router
 	var routeFunc func(ctx *fiber.Ctx) error
 
 	routeFunc = nil
-	if len(handlers) > 0 {
-		h = handlers[0]
+	if len(handleList) > 0 {
+		h = handleList[0]
 		routeFunc = func(ctx *fiber.Ctx) error {
 			return h(AdapterContextGofiber(context, ctx))
 		}
