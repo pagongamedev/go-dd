@@ -49,7 +49,7 @@ func (app *AppNetHTTP) Listen(port string, extraList ...interface{}) error {
 		handle = extraList[0].(http.Handler)
 	}
 
-	app.server = &http.Server{Addr: ":" + port, Handler: handle}
+	app.server = &http.Server{Addr: port, Handler: handle}
 	return app.server.ListenAndServe()
 }
 
