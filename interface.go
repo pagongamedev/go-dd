@@ -13,13 +13,14 @@ type InterfaceClose interface {
 type InterfaceApp interface {
 	GetFramework() FrameWork
 	App() interface{}
-	GetFrameworkApp() interface{}
 	Listen(port string) error
 	Shutdown() error
 	Get(path string, context *Context, handlers ...Handler) InterfaceHTTP
 	Group(path string, context *Context, handlers ...Handler) InterfaceHTTP
 	IsSupportHTTP() bool
 }
+
+//==================================
 
 // InterfaceHTTP interface
 type InterfaceHTTP interface {
@@ -30,6 +31,14 @@ type InterfaceHTTP interface {
 	Patch(path string, context *Context, handlers ...func(context *Context) error)
 	Delete(path string, context *Context, handlers ...func(context *Context) error)
 }
+
+//==================================
+
+// InterfaceAMQP interface
+type InterfaceAMQP interface {
+}
+
+//==================================
 
 // InterfaceContext interface
 type InterfaceContext interface {

@@ -30,6 +30,7 @@ type FrameWork string
 const (
 	// FrameWorkGofiber FrameWork
 	FrameWorkGofiberV2 FrameWork = "gofiber/v2"
+	FrameWorkNetHTTP   FrameWork = "net/http"
 )
 
 // Env type
