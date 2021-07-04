@@ -34,7 +34,7 @@ type AppGofiber struct {
 
 // App func
 func (app *AppGofiber) App() interface{} {
-	return &app.app
+	return app.app
 }
 
 // SetApp func
