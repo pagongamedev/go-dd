@@ -16,12 +16,18 @@ func New() *API {
 	return &API{LifeCycle: &goddAPILifeCycle.APILifeCycle{}}
 }
 
-func NewWithContext(service interface{}, serviceOptionList map[string]interface{}, state map[string]interface{}, i18n *godd.I18N) *API {
-	return &API{
-		LifeCycle: &goddAPILifeCycle.APILifeCycle{},
-		context:   godd.NewContext(nil, service, serviceOptionList, state, i18n),
-	}
+func NewWithInitial(context *godd.Context, apiMiddleware *goddAPILifeCycle.APILifeCycle, mappingStandardResponse goddAPILifeCycle.MappingStandardResponse, mappingStandardError goddAPILifeCycle.MappingStandardError) *API {
+	api := &API{LifeCycle: &goddAPILifeCycle.APILifeCycle{}}
+	api.Initial(context, apiMiddleware, mappingStandardResponse, mappingStandardError)
+	return api
 }
+
+// func NewWithContext(service interface{}, serviceOptionList map[string]interface{}, state map[string]interface{}, i18n *godd.I18N) *API {
+// 	return &API{
+// 		LifeCycle: &goddAPILifeCycle.APILifeCycle{},
+// 		context:   godd.NewContext(nil, service, serviceOptionList, state, i18n),
+// 	}
+// }
 
 // Initial API
 func (api *API) Initial(context *godd.Context, apiMiddleware *goddAPILifeCycle.APILifeCycle, mappingStandardResponse goddAPILifeCycle.MappingStandardResponse, mappingStandardError goddAPILifeCycle.MappingStandardError) {
