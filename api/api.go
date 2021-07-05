@@ -26,6 +26,9 @@ func NewWithContext(service interface{}, serviceOptionList map[string]interface{
 // Initial API
 func (api *API) Initial(context *godd.Context, apiMiddleware *goddAPILifeCycle.APILifeCycle, mappingStandardResponse goddAPILifeCycle.MappingStandardResponse, mappingStandardError goddAPILifeCycle.MappingStandardError) {
 	api.context = context
+	if apiMiddleware == nil {
+		apiMiddleware = &goddAPILifeCycle.APILifeCycle{}
+	}
 	api.apiMiddleware = apiMiddleware
 	api.LifeCycle.CheckerLifeCycle(apiMiddleware, mappingStandardResponse, mappingStandardError)
 }
