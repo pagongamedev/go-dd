@@ -43,3 +43,7 @@ func (api *API) HandlerLifeCycle() godd.Handler {
 		return api.LifeCycle.GetSendResponse()(context, apiResponse.Code, apiResponse.Response)
 	}
 }
+
+func (api *API) RunLifeCycle() (*goddAPILifeCycle.APIResponse, error) {
+	return api.LifeCycle.HandlerLifeCycle(api.context)
+}
