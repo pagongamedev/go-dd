@@ -12,6 +12,7 @@ import (
 // HTTPMappingStandardError
 func HTTPMappingStandardError(goddErr *godd.Error) (codeOut int, responseError interface{}, goddErrOut *godd.Error) {
 	return codeOut, godd.ResponseDataList{
+			Code:    codeOut,
 			Success: false,
 			Message: "unsuccess",
 			ResponseError: &godd.ResponseError{
